@@ -71,19 +71,33 @@ module.exports = async (req, res) => {
     { role: "user", parts: [{ text: clip(message, LIMITS.message) }] },
   ];
 
+  // Free Gemini models are sometimes overloaded (503) or rate-limited per model (429).
+  // Retry once after a short pause, then fall back to the next model.
+  let last = 0;
   try {
-    for (const model of MODELS) {
-      const { status, data } = await callGemini(model, key, SYSTEM, contents);
-      if (status === 404) continue; // model name not available: try the next one
-      if (status === 429) return res.status(429).json({ error: "The AI tutor has reached its usage limit for now. Try again in a minute." });
-      if (status !== 200) return res.status(502).json({ error: `The AI service returned an error (${status}).` });
-      const cand = data.candidates && data.candidates[0];
-      const text = cand && cand.content && (cand.content.parts || []).map(p => p.text || "").join("").trim();
-      if (!text) return res.status(502).json({ error: "The AI service returned an empty answer. Try rephrasing." });
-      return res.status(200).json({ reply: text, truncated: cand.finishReason === "MAX_TOKENS", model });
+    for (const model of [...new Set(MODELS)]) {
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const { status, data } = await callGemini(model, key, SYSTEM, contents);
+        last = status;
+        if (status === 200) {
+          const cand = data.candidates && data.candidates[0];
+          const text = cand && cand.content && (cand.content.parts || []).map(p => p.text || "").join("").trim();
+          if (!text) return res.status(502).json({ error: "The AI service returned an empty answer. Try rephrasing." });
+          return res.status(200).json({ reply: text, truncated: cand.finishReason === "MAX_TOKENS", model });
+        }
+        console.error(`Gemini ${model} attempt ${attempt + 1}: ${status} ${data.error ? data.error.message : ""}`);
+        if (status === 400 || status === 401 || status === 403) {
+          return res.status(502).json({ error: "The AI service rejected the request. Check GEMINI_API_KEY in Vercel." });
+        }
+        if (status !== 503 && status !== 500) break;            // 404/429: go straight to the next model
+        if (attempt === 0) await new Promise(r => setTimeout(r, 1200));
+      }
     }
-    return res.status(502).json({ error: "No configured Gemini model is available. Set GEMINI_MODEL in Vercel." });
   } catch (e) {
+    console.error("Gemini fetch failed:", e && e.message);
     return res.status(502).json({ error: "Could not reach the AI service. Try again." });
   }
+  if (last === 429) return res.status(429).json({ error: "The AI tutor has reached its usage limit for now. Try again in a minute." });
+  if (last === 503 || last === 500) return res.status(503).json({ error: "The AI service is busy right now. Try again in a moment." });
+  return res.status(502).json({ error: "No configured Gemini model is available. Set GEMINI_MODEL in Vercel." });
 };
