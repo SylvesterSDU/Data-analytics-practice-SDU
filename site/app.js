@@ -192,7 +192,8 @@ function renderReply(text) {
       const para = el("p");
       p.split(/(`[^`]+`)/).forEach(part => {
         if (/^`[^`]+`$/.test(part)) para.append(el("code", {}, part.slice(1, -1)));
-        else para.append(part.replace(/\*\*/g, ""));
+        // Drop markdown emphasis (*word*, **word**) but keep things like COUNT(*).
+        else para.append(part.replace(/(^|[\s(])\*{1,2}([A-Za-z][^*\n]*?)\*{1,2}(?=[\s.,;:!?)]|$)/g, "$1$2"));
       });
       box.append(para);
     });
