@@ -93,13 +93,16 @@ movie(7, "Joins & lookups", 3,
 
 movie(8, "Joins & lookups", 4,
       "List the names of all people who starred in a movie released in 2003, ordered by birth year. Each person should appear only once. How many rows?",
-      [Num("Number of people", val(M, "SELECT COUNT(DISTINCT person_id) FROM stars JOIN movies ON movies.id = stars.movie_id WHERE year = 2003"),
+      [Num("Number of people", val(M, "SELECT COUNT(DISTINCT people.id) FROM people JOIN stars ON stars.person_id = people.id JOIN movies ON movies.id = stars.movie_id WHERE year = 2003"),
+           accept=[val(M, "SELECT COUNT(DISTINCT person_id) FROM stars JOIN movies ON movies.id = stars.movie_id WHERE year = 2003"),
+                   val(M, "SELECT COUNT(DISTINCT people.name) FROM people JOIN stars ON stars.person_id = people.id JOIN movies ON movies.id = stars.movie_id WHERE year = 2003")],
            mistakes=[(val(M, "SELECT COUNT(*) FROM stars JOIN movies ON movies.id = stars.movie_id WHERE year = 2003"),
                       "Some people starred in several 2003 movies. Use DISTINCT.")])])
 
 movie(9, "Joins & lookups", 4,
       "List the names of all people who directed a movie with a rating of at least 8.0. Each person only once. How many rows?",
       [Num("Number of directors", val(M, "SELECT COUNT(DISTINCT d.person_id) FROM directors d JOIN ratings r ON r.movie_id = d.movie_id WHERE r.rating >= 8.0"),
+           accept=[val(M, "SELECT COUNT(DISTINCT p.name) FROM people p JOIN directors d ON d.person_id = p.id JOIN ratings r ON r.movie_id = d.movie_id WHERE r.rating >= 8.0")],
            mistakes=[(val(M, "SELECT COUNT(*) FROM directors d JOIN ratings r ON r.movie_id = d.movie_id WHERE r.rating >= 8.0"),
                       "Directors with several qualifying movies are counted twice. Use DISTINCT."),
                      (val(M, "SELECT COUNT(DISTINCT d.person_id) FROM directors d JOIN ratings r ON r.movie_id = d.movie_id WHERE r.rating > 8.0"),

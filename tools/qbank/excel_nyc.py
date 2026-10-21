@@ -22,15 +22,16 @@ q(1, "Data profiling & cleaning", 2,
 zip_ok = d.ZipCode.dropna()
 invalid = int(((zip_ok < 10000) | (zip_ok > 99999)).sum())
 q(2, "Data profiling & cleaning", 3,
-  "Profile the ZipCode column. How many records have a missing zip code, and how many have a value that is not a valid 5-digit zip code?",
-  [Num("Records with missing zip code", d.ZipCode.isna().sum()),
+  "Profile the ZipCode column. How many records have a missing zip code (blank or the text N/A), and how many have a value that is not a valid 5-digit zip code?",
+  [Num("Records with missing zip code", d.ZipCode.isna().sum(),
+       mistakes=[(0, "The missing zip codes are stored as the text N/A, not as empty cells, so COUNTBLANK finds none. Count the N/A values.")]),
    Num("Records with an invalid zip code", invalid,
        mistakes=[(invalid + d.ZipCode.isna().sum(), "That count includes the blanks. Count missing and invalid values separately.")])])
 
 const = [c for c in d if d[c].nunique(dropna=False) == 1][0]
 q(3, "Data profiling & cleaning", 2,
   "Which column has the same value in every record? Give the exact column name.",
-  [Text("Column name", const)])
+  [Text("Column name", const, accept=["event agency"])])
 
 q(4, "Dates & durations", 3,
   "What are the oldest and the newest EnteredOn values? Give the full date and time.",
@@ -42,7 +43,7 @@ et = d.EventType.value_counts()
 q(5, "Group & aggregate", 3,
   "How many different event types are there? Which is the most common, and how many records does it have?",
   [Num("Number of event types", d.EventType.nunique()),
-   Text("Most common event type", et.index[0]),
+   Text("Most common event type", et.index[0], accept=["shooting permits", "shooting"]),
    Num("Records of that type", et.iloc[0])])
 
 cat = s.Category.value_counts()
@@ -82,10 +83,11 @@ q(9, "Group & aggregate", 4,
 man = s[s.Borough == "Manhattan"]
 bway = man.ParkingHeld.str.contains("BROADWAY", case=False)
 q(10, "Text functions & extraction", 4,
-  "What percentage of Manhattan shooting permits take place on or near Broadway (the ParkingHeld text mentions BROADWAY)? Round to the nearest percent.",
+  "What percentage of Manhattan shooting permits take place on or near Broadway (the ParkingHeld text mentions Broadway, in any capitalisation)? Round to the nearest percent.",
   [Num("Percentage", bway.mean() * 100, 0, percent=True,
        mistakes=[(bway.sum() / len(s) * 100, "You divided by all shooting permits. The base is Manhattan shooting permits only.")]),
-   Num("Number of Manhattan permits mentioning Broadway", bway.sum())])
+   Num("Number of Manhattan permits mentioning Broadway", bway.sum(),
+       accept=[man.ParkingHeld.str.contains("BROADWAY", case=True).sum()])])
 
 foreign = s[(s.Country != "United States of America") & (s.EnteredOn.dt.year >= 2013)]
 q(11, "Filter & count", 3,

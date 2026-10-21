@@ -74,7 +74,7 @@ function canonNumbers(n, decimals) {
   if (decimals > 0) base.push(n + 1 / f, n - 1 / f); // tolerate rounding in the last decimal
   return base.map(v => (Math.round(v * f) / f + 0).toFixed(decimals));
 }
-const canonText = s => String(s).trim().toLowerCase().split(/\s+/).join(" ");
+const canonText = s => String(s).replace(/[\u2018\u2019]/g, "'").trim().toLowerCase().split(/\s+/).join(" ");
 
 // Dates: 2011-12-07 16:38, 12/7/2011 16:38, 7-12-2011 4:38 PM. Day/month order is ambiguous, so both are tried.
 function dateCandidates(raw, withTime) {

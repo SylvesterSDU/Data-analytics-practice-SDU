@@ -38,7 +38,17 @@ def canon_number(x, decimals):
 
 
 def canon_text(s):
-    return " ".join(str(s).strip().lower().split())
+    s = str(s).replace("\u2019", "'").replace("\u2018", "'")
+    return " ".join(s.strip().lower().split())
+
+
+def name_forms(full):
+    """Other ways to type a person's name: 'G Hines' -> 'Hines, G', 'Hines G', 'G. Hines'."""
+    first, last = full.split()[0], " ".join(full.split()[1:])
+    forms = [f"{last}, {first}", f"{last} {first}"]
+    if len(first) == 1:
+        forms += [f"{first}. {last}", f"{last}, {first}."]
+    return forms
 
 
 def canon_date(d, with_time):

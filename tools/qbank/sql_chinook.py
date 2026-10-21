@@ -1,7 +1,7 @@
 """SQL part 1: PwC assignment on the Chinook database (cross-checked against PWC answers.docx)."""
 from datetime import datetime
 
-from .common import Date, Num, Text, question, sql, val
+from .common import Date, Num, Text, name_forms, question, sql, val
 
 C = "Chinook_Sqlite.sqlite"
 
@@ -92,7 +92,7 @@ q(11, "Joins & lookups", 4,
 rep = sql(C, "SELECT e.FirstName || ' ' || e.LastName, SUM(i.Total) FROM Invoice i JOIN Customer c ON c.CustomerId = i.CustomerId JOIN Employee e ON e.EmployeeId = c.SupportRepId GROUP BY e.EmployeeId ORDER BY 2 DESC")
 q(12, "Joins & lookups", 5,
   "Which support representative (employee) is linked to the highest invoice total through their customers? Give the name and the total.",
-  [Text("Employee (first and last name)", rep[0][0]), Num("Invoice total", rep[0][1], 2)],
+  [Text("Employee (first and last name)", rep[0][0], accept=name_forms(rep[0][0])), Num("Invoice total", rep[0][1], 2)],
   note="Invoice → Customer (CustomerId) → Employee (SupportRepId = EmployeeId).")
 
 years = dict(sql(C, "SELECT strftime('%Y', InvoiceDate), SUM(Total) FROM Invoice GROUP BY 1"))

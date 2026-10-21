@@ -1,5 +1,5 @@
 """SQL part 2: P-card audit (OSU), Tasks 4, 5 and 7. Practice subset: calendar years 2013-2014."""
-from .common import Num, Text, question, sql, val
+from .common import Num, Text, name_forms, question, sql, val
 
 P = "pcards_2013_2014.zip"
 SRC = "Purchasing cards"
@@ -29,7 +29,7 @@ def q(n, task, topic, minutes, prompt, checks, note=NOTE):
 top = sql(P, "SELECT FullName, Amount, Vendor FROM pcards ORDER BY Amount DESC LIMIT 1", one=True)
 q(1, 4, "Sort & top-N", 2,
   "Task 4, Q1: Show all transactions sorted by amount, most expensive first (year, month, cardholder, amount, vendor). How many rows, and who is the cardholder and vendor in the first row?",
-  [Num("Number of rows", val(P, "SELECT COUNT(*) FROM pcards")), Text("Cardholder (FullName) in row 1", top[0]),
+  [Num("Number of rows", val(P, "SELECT COUNT(*) FROM pcards")), Text("Cardholder (FullName) in row 1", top[0], accept=name_forms(top[0])),
    Text("Vendor in row 1", top[2])])
 
 first14 = sql(P, f"SELECT FullName, Amount FROM pcards WHERE {Y14} ORDER BY Month, Amount DESC, FullName LIMIT 1", one=True)
@@ -37,7 +37,7 @@ q(2, 4, "Sort & top-N", 3,
   "Task 4, Q2: Show all 2014 transactions sorted by month, then most expensive first, then alphabetically by cardholder. How many rows, and what are the cardholder and amount in the first row?",
   [Num("Number of rows", val(P, f"SELECT COUNT(*) FROM pcards WHERE {Y14}"),
        mistakes=[(val(P, "SELECT COUNT(*) FROM pcards WHERE TransactionDate > '2014'"), TEXT_DATE)]),
-   Text("Cardholder in row 1", first14[0]), Num("Amount in row 1", first14[1], 2,
+   Text("Cardholder in row 1", first14[0], accept=name_forms(first14[0])), Num("Amount in row 1", first14[1], 2,
                                                 mistakes=[(val(P, f"SELECT MAX(Amount) FROM pcards WHERE {Y14}"), "Sort by Month first, then by amount.")])])
 
 r3 = sql(P, f"SELECT COUNT(*), SUM(Amount) FROM pcards WHERE {Y14} AND Amount > 3000", one=True)
@@ -71,7 +71,7 @@ q(6, 4, "Filter & count", 3,
 cnt = sql(P, f"SELECT FullName, COUNT(*) FROM pcards WHERE {Y14} GROUP BY FullName ORDER BY 2 DESC")
 q(7, 4, "Group & aggregate", 3,
   "Task 4, Q9 and Q11: Count 2014 transactions per cardholder (NumTrans), most first. Who has the most, and how many? How many cardholders have more than 10 transactions?",
-  [Text("Cardholder with most transactions", cnt[0][0]),
+  [Text("Cardholder with most transactions", cnt[0][0], accept=name_forms(cnt[0][0])),
    Num("NumTrans for that cardholder", cnt[0][1],
        mistakes=[(val(P, f"SELECT MAX(c) FROM (SELECT COUNT(*) c FROM pcards WHERE {Y14} GROUP BY CardholderLastName)"), LAST_ONLY)]),
    Num("Cardholders with more than 10 transactions", sum(1 for r in cnt if r[1] > 10),
@@ -81,7 +81,7 @@ q(7, 4, "Group & aggregate", 3,
 ret = sql(P, f"SELECT FullName, SUM(Amount), COUNT(*) FROM pcards WHERE {Y14} AND Amount < 0 GROUP BY FullName ORDER BY 2")
 q(8, 4, "Group & aggregate", 4,
   "Task 4, Q10 and Q12: For 2014 returns (negative amounts), who returned the greatest dollar amount of goods? Give ReturnedGoodsValue and ReturnedGoodsCount. How many people returned more than $1,000 in total?",
-  [Text("Cardholder", ret[0][0]), Num("ReturnedGoodsValue (negative)", ret[0][1], 2),
+  [Text("Cardholder", ret[0][0], accept=name_forms(ret[0][0])), Num("ReturnedGoodsValue (negative)", ret[0][1], 2),
    Num("ReturnedGoodsCount", ret[0][2]), Num("People with returns over $1,000", sum(1 for r in ret if r[1] < -1000))],
   note=NOTE + " Returns are negative amounts, so the greatest return is the most negative sum.")
 
@@ -89,12 +89,13 @@ tax = sql(P, f"SELECT MAX(Amount * 0.045), SUM(Amount * 0.045) FROM pcards WHERE
 q(9, 4, "Calculated fields (IF / CASE)", 3,
   "Task 4, Q13: Compute SalesTax = 4.5% of each amount for December 2014 transactions, largest first. What is the largest SalesTax, and what is the total SalesTax for the month?",
   [Num("Largest SalesTax", tax[0], 2, mistakes=[(tax[0] * 100, "Use 0.045, not 4.5.")]),
-   Num("Total SalesTax December 2014", tax[1], 2)])
+   Num("Total SalesTax December 2014", tax[1], 2,
+       accept=[val(P, f"SELECT SUM(ROUND(Amount * 0.045, 2)) FROM pcards WHERE {Y14} AND Month = 12")])])
 
 sv = sql(P, f"SELECT SUM(Amount), SUM(Amount) * 0.045 FROM pcards WHERE {Y14}", one=True)
 q(10, 4, "Calculated fields (IF / CASE)", 4,
   "Task 4, Q14-Q15: How much did OSU avoid paying in state sales tax (4.5%) on 2014 P-card transactions? Then assume tax had to be paid out of state 30% of the time, so savings apply to only 70% of spending.",
-  [Num("Total spent 2014", sv[0], 2), Num("SalesTaxSaved (100%)", sv[1], 2), Num("SalesTaxSaved (70%)", sv[1] * 0.7, 2,
+  [Num("Total net spent 2014 (purchases minus returns)", sv[0], 2), Num("SalesTaxSaved (100%)", sv[1], 2), Num("SalesTaxSaved (70%)", sv[1] * 0.7, 2,
                                                                               mistakes=[(sv[1] * 0.3, "That is 30%. Savings apply to the 70% of spending where no tax was paid.")])])
 
 td = sql(P, f"SELECT MAX(julianday({PD}) - julianday({TD})), AVG(julianday({PD}) - julianday({TD})) FROM pcards WHERE {Y14} AND Month = 11", one=True)
@@ -112,10 +113,11 @@ q(12, 4, "Calculated fields (IF / CASE)", 5,
 
 amzE = "SUM(CASE WHEN Amount >= 500 THEN Amount * 0.0075 ELSE Amount * 0.005 END)"
 q(13, 4, "Calculated fields (IF / CASE)", 5,
-  "Task 4, Q18: OSU could earn 0.75% on Amazon.com purchases of $500 or more and 0.50% on purchases under $500. What would OSU have earned in 2014 (AmazonEarnings)? Use the vendor name Amazon.com in any capitalisation.",
+  "Task 4, Q18: OSU could earn 0.75% on Amazon.com purchases of $500 or more and 0.50% on purchases under $500. What would OSU have earned in 2014 (AmazonEarnings)? Include all Amazon.com transactions, so returns reduce the earnings. Use the vendor name Amazon.com in any capitalisation.",
   [Num("AmazonEarnings 2014", val(P, f"SELECT {amzE} FROM pcards WHERE {Y14} AND Vendor LIKE 'amazon.com'"), 2,
        mistakes=[(val(P, f"SELECT {amzE} FROM pcards WHERE {Y14} AND Vendor = 'Amazon.com'"), "You missed 'AMAZON.COM' in capitals. LIKE 'amazon.com' ignores case."),
-                 (val(P, f"SELECT {amzE} FROM pcards WHERE {Y14} AND Vendor LIKE '%amazon%'"), "That includes all Amazon vendors (Marketplace, Kindle...). The question is about Amazon.com only.")])])
+                 (val(P, f"SELECT {amzE} FROM pcards WHERE {Y14} AND Vendor LIKE '%amazon%'"), "That includes all Amazon vendors (Marketplace, Kindle...). The question is about Amazon.com only."),
+                 (val(P, f"SELECT {amzE} FROM pcards WHERE {Y14} AND Vendor LIKE 'amazon.com' AND Amount > 0"), "You left out the returns. Include all Amazon.com transactions: a return reduces the earnings.")])])
 
 q(14, 4, "Multi-step queries", 4,
   "Task 4, Q19: Show all 2014 transactions above the 2014 average transaction amount. How many rows, and what is the 2014 average (two decimals)?",
@@ -144,7 +146,7 @@ q(1, 5, "Control & fraud tests", 4,
   [Num("Cardholders over $50,000", len(y),
        mistakes=[(len(sql(P, "SELECT FullName FROM pcards GROUP BY FullName HAVING SUM(Amount) > 50000")), BOTH_YEARS + " The limit is per year."),
                  (len(sql(P, f"SELECT CardholderLastName FROM pcards WHERE {Y14} GROUP BY CardholderLastName HAVING SUM(Amount) > 50000")), LAST_ONLY)]),
-   Text("Top cardholder", y[0][0]), Num("Total spent", y[0][1], 2)])
+   Text("Top cardholder", y[0][0], accept=name_forms(y[0][0])), Num("Total spent", y[0][1], 2)])
 
 m = sql(P, f"SELECT FullName, Month, SUM(Amount) s FROM pcards WHERE {Y14} GROUP BY FullName, Month HAVING s > 10000")
 q(2, 5, "Control & fraud tests", 4,
@@ -200,11 +202,15 @@ q(2, 7, "Control & fraud tests", 7,
   [Num("Possible duplicate transactions", dup[0],
        mistakes=[(len(sql(P, dup_groups)), "That is the number of duplicate groups. Count every transaction in those groups.")]),
    Num("Individuals involved", dup[1]),
-   Text("Individual with most duplicate groups", who[0][0])])
+   Text("Individual with most duplicate groups", who[0][0], accept=name_forms(who[0][0]))])
 
 rnd = val(P, f"SELECT COUNT(*) FROM pcards WHERE {Y14} AND Amount BETWEEN 1000 AND 9999 AND Amount = ROUND(Amount) AND Amount % 1000 = 0")
 q(3, 7, "Control & fraud tests", 4,
-  "Task 7, Q4: Round-number transactions can indicate fraud. How many 2014 transactions have a four-digit amount ending in 000 (e.g. 2000.00, no cents)?",
+  "Task 7, Q4: Round-number transactions can indicate fraud. How many positive 2014 transactions are a four-digit whole-dollar amount ending in 000 (exactly 1000.00, 2000.00 ... 9000.00, no cents)?",
   [Num("Round-number transactions", rnd,
        mistakes=[(val(P, f"SELECT COUNT(*) FROM pcards WHERE {Y14} AND Amount >= 1000 AND Amount = ROUND(Amount) AND Amount % 1000 = 0"),
-                  "That includes amounts with five or more digits. Four digits means 1000 to 9999.")])])
+                  "That includes amounts with five or more digits. Four digits means 1000 to 9999."),
+                 (val(P, f"SELECT COUNT(*) FROM pcards WHERE {Y14} AND Amount BETWEEN 1000 AND 9999 AND Amount % 1000 = 0"),
+                  "SQLite's % works on whole numbers, so 1000.10 % 1000 is also 0. Also require no cents: Amount = ROUND(Amount)."),
+                 (val(P, f"SELECT COUNT(*) FROM pcards WHERE {Y14} AND ABS(Amount) BETWEEN 1000 AND 9999 AND Amount = ROUND(Amount) AND CAST(Amount AS INTEGER) % 1000 = 0"),
+                  "That includes returns (negative amounts). The question asks for positive transactions.")])])

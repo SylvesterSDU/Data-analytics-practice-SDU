@@ -129,7 +129,9 @@ q4 = "XL-ETL4"
 at = j.groupby("AccountType").Amount.sum()
 question(f"{q4}-01", "Excel", "ETL case 4: journal entries", F4, "Joins & lookups", 5,
          "Look up AccountType for every journal entry line from the ChartOfAccounts tab. What is the total Amount for Revenue accounts and for Expenses accounts?",
-         [Num("Total Amount, Revenue", at["Revenue"], 2), Num("Total Amount, Expenses", at["Expenses"], 2)],
+         [Num("Total Amount, Revenue (credits are negative)", at["Revenue"], 2,
+              mistakes=[(-at["Revenue"], "Revenue accounts have credit balances, which are stored as negative amounts. Type the sum of Amount as it is, with the minus sign.")]),
+          Num("Total Amount, Expenses", at["Expenses"], 2)],
          note="Two GL account numbers are stored as text (e.g. 70300-HP). Make sure your lookup matches them too.")
 
 name = "Carolyn Slater"
@@ -152,7 +154,9 @@ ac = j.groupby("AccountClass").Amount.sum()
 bu_n = j.groupby("BusinessUnit").size()
 question(f"{q4}-04", "Excel", "ETL case 4: journal entries", F4, "Joins & lookups", 5,
          "Add AccountClass and BusinessUnit to the flat file. What is the total Amount for the account class Sales-Hotel, and how many lines belong to the HOTEL business unit?",
-         [Num("Total Amount, Sales-Hotel", ac["Sales-Hotel"], 2), Num("Lines in HOTEL business unit", bu_n["HOTEL"])])
+         [Num("Total Amount, Sales-Hotel (credits are negative)", ac["Sales-Hotel"], 2,
+              mistakes=[(-ac["Sales-Hotel"], "Sales are credits, stored as negative amounts. Type the sum of Amount as it is, with the minus sign.")]),
+          Num("Lines in HOTEL business unit", bu_n["HOTEL"])])
 
 # ---------- Quick questions (fit the 8-minute exam format) ----------
 question(f"{q1}-04", "Excel", "ETL case 1: balance sheet data", F1, "Data profiling & cleaning", 2,
@@ -176,5 +180,7 @@ question(f"{q4}-05", "Excel", "ETL case 4: journal entries", F4, "Data profiling
 
 question(f"{q4}-06", "Excel", "ETL case 4: journal entries", F4, "Group & aggregate", 2,
          "Control totals: what is the sum of the Credit column, and the sum of the Amount column?",
-         [Num("Sum of Credit", je.Credit.sum(), 2), Num("Sum of Amount", je.Amount.sum(), 2)],
+         [Num("Sum of Credit (as stored, negative)", je.Credit.sum(), 2,
+              mistakes=[(-je.Credit.sum(), "Credits are stored as negative numbers in this file. Type the sum as it is, with the minus sign.")]),
+          Num("Sum of Amount", je.Amount.sum(), 2)],
          note="Debits and credits should balance, so the Amount column should net to zero.")

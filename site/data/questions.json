@@ -56,7 +56,7 @@
    ],
    "topic": "Data profiling & cleaning",
    "minutes": 3,
-   "prompt": "Profile the ZipCode column. How many records have a missing zip code, and how many have a value that is not a valid 5-digit zip code?",
+   "prompt": "Profile the ZipCode column. How many records have a missing zip code (blank or the text N/A), and how many have a value that is not a valid 5-digit zip code?",
    "checks": [
     {
      "label": "Records with missing zip code",
@@ -64,7 +64,12 @@
      "decimals": 0,
      "percent": false,
      "hash": "e7d6f46e67fc289d734abecaaa2709156f79342d831d3d93ed8d363d6dd7d177",
-     "mistakes": []
+     "mistakes": [
+      {
+       "hash": "47c0f4e6428779ab3475527b700f27d3350d1919203adb9e3b4bf2ae27b5c5d5",
+       "hint": "The missing zip codes are stored as the text N/A, not as empty cells, so COUNTBLANK finds none. Count the N/A values."
+      }
+     ]
     },
     {
      "label": "Records with an invalid zip code",
@@ -96,6 +101,9 @@
      "label": "Column name",
      "type": "text",
      "hash": "0df2f968681e9cc2910b951c2a5fc4a752c8060e04084806a8dcd946c0e1e9f9",
+     "accept": [
+      "2489afced9dcd654b2113e689f81dcb46d2de3c9cbd6f28055d1a11d990b3ac8"
+     ],
      "mistakes": []
     }
    ]
@@ -151,6 +159,10 @@
      "label": "Most common event type",
      "type": "text",
      "hash": "b24d00c6c1034cf600f40a8b74fbfa940c3106fc604e0e2394bf517dd8bc0a5c",
+     "accept": [
+      "cd15d29dae5ecee2696c6e6942d95ef0a53403954991bcde40fcf322e67343a7",
+      "776eba087c647a484e808ddc610b175dfb7784252bc2ef416f8136c7721086fe"
+     ],
      "mistakes": []
     },
     {
@@ -306,7 +318,7 @@
    ],
    "topic": "Text functions & extraction",
    "minutes": 4,
-   "prompt": "What percentage of Manhattan shooting permits take place on or near Broadway (the ParkingHeld text mentions BROADWAY)? Round to the nearest percent.",
+   "prompt": "What percentage of Manhattan shooting permits take place on or near Broadway (the ParkingHeld text mentions Broadway, in any capitalisation)? Round to the nearest percent.",
    "checks": [
     {
      "label": "Percentage",
@@ -327,6 +339,9 @@
      "decimals": 0,
      "percent": false,
      "hash": "d4db1c67df07dea63f85d31d743a261576b621c6f17ae177cedbffae0f96f019",
+     "accept": [
+      "ef574cb59e60066b57d73dc839010e8ce9ff8ee1f9461608199b72498fd18ed7"
+     ],
      "mistakes": []
     }
    ]
@@ -884,12 +899,17 @@
    "note": "Two GL account numbers are stored as text (e.g. 70300-HP). Make sure your lookup matches them too.",
    "checks": [
     {
-     "label": "Total Amount, Revenue",
+     "label": "Total Amount, Revenue (credits are negative)",
      "type": "number",
      "decimals": 2,
      "percent": false,
      "hash": "3ff7717a72514f65db225e45924d141c24a242dd9cf81d40e8e26110d5f85f58",
-     "mistakes": []
+     "mistakes": [
+      {
+       "hash": "5f81b7281aac4c9527ce16f988d66ee941895504898bebcb482cd4dd5e586ea8",
+       "hint": "Revenue accounts have credit balances, which are stored as negative amounts. Type the sum of Amount as it is, with the minus sign."
+      }
+     ]
     },
     {
      "label": "Total Amount, Expenses",
@@ -992,12 +1012,17 @@
    "prompt": "Add AccountClass and BusinessUnit to the flat file. What is the total Amount for the account class Sales-Hotel, and how many lines belong to the HOTEL business unit?",
    "checks": [
     {
-     "label": "Total Amount, Sales-Hotel",
+     "label": "Total Amount, Sales-Hotel (credits are negative)",
      "type": "number",
      "decimals": 2,
      "percent": false,
      "hash": "af088edfccbed8833f1286298ab553d525f56884e4c4883b178ebd16e77c661d",
-     "mistakes": []
+     "mistakes": [
+      {
+       "hash": "112a92f0e11c24707c4346f96ea53be8d62795aa43298034c76972e34fdc2cf8",
+       "hint": "Sales are credits, stored as negative amounts. Type the sum of Amount as it is, with the minus sign."
+      }
+     ]
     },
     {
      "label": "Lines in HOTEL business unit",
@@ -1145,12 +1170,17 @@
    "note": "Debits and credits should balance, so the Amount column should net to zero.",
    "checks": [
     {
-     "label": "Sum of Credit",
+     "label": "Sum of Credit (as stored, negative)",
      "type": "number",
      "decimals": 2,
      "percent": false,
      "hash": "4deeff303019b138ff1f1a4a32f77dee622130e69f95b890718cfe87074b7b8d",
-     "mistakes": []
+     "mistakes": [
+      {
+       "hash": "136d61bb7996149a13fa115cdc22bc9c85326ab7d357bab2afc96aee83015b51",
+       "hint": "Credits are stored as negative numbers in this file. Type the sum as it is, with the minus sign."
+      }
+     ]
     },
     {
      "label": "Sum of Amount",
@@ -1221,7 +1251,7 @@
    ],
    "topic": "Text functions & extraction",
    "minutes": 6,
-   "prompt": "Extract the job code from Job (2015) and Project (2016). Format: 2-digit project year, optional department letter (H or S), 3-digit job code, optional location code. Examples: 14005, 15S002, 14S001SG, 15007B. What is 2015 gross pay for job code 001 (Office)?",
+   "prompt": "Extract the job code from Job (2015) and Project (2016). Format: 2-digit project year, optional department letter (H or S), 3-digit job code, optional location code. Examples: 14005, 15S002, 14S001SG, 15007B. What is 2015 gross pay for job code 001 (Office)? (2015 gross pay = Reg_Pay + OT_Pay.)",
    "checks": [
     {
      "label": "2015 gross pay, job code 001",
@@ -1233,6 +1263,10 @@
       {
        "hash": "d6bb231bb8d2ec32e71f72fb5abde22fd99bf4951d0f0e157b2a3534c43270e0",
        "hint": "You took the last three characters. Location codes (B, SG, R) come after the job code. Extract the three digits after the year and the optional H/S."
+      },
+      {
+       "hash": "80c1e86bda2f6709c795f272958dd8d39858f1538f17d0002cfe5d294b0fae56",
+       "hint": "That uses Reg_Pay only. 2015 gross pay = Reg_Pay + OT_Pay."
       }
      ]
     }
@@ -1256,6 +1290,13 @@
      "label": "Job code with the largest difference overall",
      "type": "text",
      "hash": "a86c71bacb47353fa122049c16e356f617bf7777573778a58ea42dff42629d78",
+     "accept": [
+      "8f2917fa1ee61fe7bb7bde8ea13ea2548278fa370e0faa7b58fcc1c24ba6a2fd",
+      "4aa49606431b9b00e0b22fc6a768e0fa822cdc1c99bce37b86753b9546344146",
+      "e0f7bd0b05ab779b2a694eb4ff0abe489253f3c9215afeb5abc219ffb476f33c",
+      "06d1484176bee3e59f7e5ce869f22884b023a669ea159c938aa2076e148f4cf7",
+      "9e48b5fc4c68d0dfb278fede356bd09e05d7addfb4538253c5a2a53297db7c90"
+     ],
      "mistakes": []
     },
     {
@@ -1270,6 +1311,13 @@
      "label": "Largest positive difference, both years",
      "type": "text",
      "hash": "6265f25f84f969384cb71f02bf57dcd23b285313b816e619b826eff9b2c25457",
+     "accept": [
+      "788c71846c7cc596eea3bd90ebe09eb900b5949697ec447aa30892bffa98d243",
+      "4264c336ccd7cdf5f3b51ef434b097041e99c2c0d1794a5807338afa8523ee8a",
+      "7b9f92f4ec06c3147e497472c72c056cc1dd0fa0dd38b823d91ae97e1fbd70ae",
+      "3ae7c1352a9bb71c54e42054dbdc0ddd5d8eb19778a52b4ab4ee55559a88d2b2",
+      "598da8dec425f5664823ee16e42a363bdf90f833f295c8168d663f44bf7bda8d"
+     ],
      "mistakes": []
     }
    ]
@@ -1338,6 +1386,10 @@
      "label": "Employee with most overtime pay",
      "type": "text",
      "hash": "7519b0b462a67fae2cf1da79ae0b29450f4783ea46ddd60b9655fd43a98a5d6d",
+     "accept": [
+      "9f51a750a4ff9f1ecdb65777fee866f2a03a93a031e5790b4ee8bfbeb43c4123",
+      "589fb07fc6786b542d929cf95dc9b45ffc46c3349a50de04f933474fe806662e"
+     ],
      "mistakes": []
     },
     {
@@ -1363,9 +1415,16 @@
    "prompt": "Part 4, Q2: List all 12 job codes from the job code table with their 2015 overtime hours and overtime pay, including codes with no overtime. Which job code has the most overtime pay, and how much? How many job codes have zero overtime?",
    "checks": [
     {
-     "label": "Job code with most overtime pay",
+     "label": "Job code with most overtime pay (e.g. 001)",
      "type": "text",
      "hash": "bffbbb747f1be2c11c197a1d113b3bb9413232cd9765890b3758edea15fa9d1b",
+     "accept": [
+      "2f96e64df5dc4e7c0e2f8cf6232933f0072ae6c675089f8cb173dbf3f21afe04",
+      "1cbc3dec03fa472ac907cd0488c19c08a7167ae853ae89ff9148c1603dd501de",
+      "87e3d565dfb8965eda4858f6d85b8d7475670bcf6977522b3621eb5c3ebf9647",
+      "e6cfed813dcf8692c39fcb5ffdacd5a6bd6ac65c1bbc7d65d3072f604b61692e",
+      "3a271025d03ec9456cc16b51cda989e07c5e3ed45b22584f7629beca6b9506b9"
+     ],
      "mistakes": []
     },
     {
@@ -1527,7 +1586,7 @@
    ],
    "topic": "Dates & durations",
    "minutes": 6,
-   "prompt": "Part 4, Q8: Total 2015 gross wages by month of Pay_Date. Which month is furthest above the six-month average, and by how much? How far below the average is June?",
+   "prompt": "Part 4, Q8: Total 2015 gross wages by month of Pay_Date. Which month is furthest above the six-month average, and by how much? How far below the average is June? (2015 gross pay = Reg_Pay + OT_Pay.)",
    "checks": [
     {
      "label": "Month furthest above average (full name)",
@@ -1541,7 +1600,12 @@
      "decimals": 2,
      "percent": false,
      "hash": "992a6cc69dd45746d0e063f644172a154ee8d2c14d1babfb0c26be9ee003a403",
-     "mistakes": []
+     "mistakes": [
+      {
+       "hash": "6fb0eb3e1c0d1e5fa7a7a3c36a0553ff5b3f004db2912818d3849fae78763698",
+       "hint": "That uses Reg_Pay only. 2015 gross pay = Reg_Pay + OT_Pay."
+      }
+     ]
     },
     {
      "label": "June vs average (negative if below)",
@@ -1549,7 +1613,12 @@
      "decimals": 2,
      "percent": false,
      "hash": "1bf2f0305093582bb6039dc5ef4cfd4086926e3859529a5761e73df54800a057",
-     "mistakes": []
+     "mistakes": [
+      {
+       "hash": "6592b45538c0bc095129883e98da1b373b0be4793e387ad99cb90f3d81666b86",
+       "hint": "That uses Reg_Pay only. 2015 gross pay = Reg_Pay + OT_Pay."
+      }
+     ]
     }
    ]
   },
@@ -1563,7 +1632,7 @@
    ],
    "topic": "Multi-step queries",
    "minutes": 6,
-   "prompt": "Part 4, Q10: The 2016 data has no dates. Estimate 2016 monthly gross wages by applying each month's share of 2015 gross wages to the 2016 total. What is the estimate for January 2016 and for May 2016?",
+   "prompt": "Part 4, Q10: The 2016 data has no dates. Estimate 2016 monthly gross wages by applying each month's share of 2015 gross wages to the 2016 total. What is the estimate for January 2016 and for May 2016? (2015 gross pay = Reg_Pay + OT_Pay.)",
    "checks": [
     {
      "label": "Estimated January 2016",
@@ -1571,7 +1640,12 @@
      "decimals": 2,
      "percent": false,
      "hash": "f89e618b92a530e2e30e1bd4fa9ccb158a477f5d44abb1e7230bbed3959136aa",
-     "mistakes": []
+     "mistakes": [
+      {
+       "hash": "a3c3f0987d6d76500940fac8d6ae361bd9d1c43f2f49af6f589513adb8abc180",
+       "hint": "That uses Reg_Pay only. 2015 gross pay = Reg_Pay + OT_Pay."
+      }
+     ]
     },
     {
      "label": "Estimated May 2016",
@@ -1579,7 +1653,12 @@
      "decimals": 2,
      "percent": false,
      "hash": "da6d42ad8b2fd439f447c2a92e5539de9708ee0480d9ad07e7699463bc72b21f",
-     "mistakes": []
+     "mistakes": [
+      {
+       "hash": "2334a1681b6cff4b25a7dbaeb4f7ed7e33a53c240e036adf7e0d41e0b8eca5f2",
+       "hint": "That uses Reg_Pay only. 2015 gross pay = Reg_Pay + OT_Pay."
+      }
+     ]
     }
    ]
   },
@@ -2110,7 +2189,11 @@
      "type": "number",
      "decimals": 0,
      "percent": false,
-     "hash": "0178c778a789de5cfdcff86de4764d4e9a52a0abab4e4957d1579e89477d315f",
+     "hash": "3f5b427cdfde10c752000ec9b75aae803ad0f6d9ffe174ff14d8bab4722c90b8",
+     "accept": [
+      "945627ba078cedb3a793c1168ff0e09f7d824a302372d8501aadc0c3b07650c2",
+      "0178c778a789de5cfdcff86de4764d4e9a52a0abab4e4957d1579e89477d315f"
+     ],
      "mistakes": [
       {
        "hash": "58def417afe3597b375f40f136871917fc0dc82d1e196b4e34c2985d360dc0f1",
@@ -2138,6 +2221,9 @@
      "decimals": 0,
      "percent": false,
      "hash": "471fde1ca6e770c8ea45156c53ea8468e887b422506abfb71787652dbd4ab886",
+     "accept": [
+      "432f0bba3b67b68b16b9c2c1d662cec2465ee6c79aead6a1732d50d4ecd1e4db"
+     ],
      "mistakes": [
       {
        "hash": "0a946790a4315318a0e46f40b020093e605380cc4cccce29783402c1f12faa8c",
@@ -2624,6 +2710,10 @@
      "label": "Employee (first and last name)",
      "type": "text",
      "hash": "453d59ec46752a315b221396744f80a6982690b347a3294ffb40de1b7924627b",
+     "accept": [
+      "d12ec29c7436d1613f990fe946c92fc1195ec70e6150eb3408025f3ae9408883",
+      "91cc79efca5087508f004a13c887220625768a9a8b17cc6e59869b76afdaf6f6"
+     ],
      "mistakes": []
     },
     {
@@ -2689,6 +2779,12 @@
      "label": "Cardholder (FullName) in row 1",
      "type": "text",
      "hash": "7c5fd2980d4f20ff491114d6683041701b4fffd7e01e4cb4a842b669895df52b",
+     "accept": [
+      "d6398a9de199c6ad167c4ab22f41d6bad42de4fa0d2e02b230ae2e8f81203734",
+      "f18f31c62390fe08d06b9378c036d58a22693e34f79d016d7b281d9f2bc78db7",
+      "53f67e828a0206196c562922ed9ac9f5eb6256bbc985fdca0ba3b53c88cff953",
+      "7f79f1aad8576e28f82a319546d733a4b8cfcf1a5c4926126d3c225205853e2c"
+     ],
      "mistakes": []
     },
     {
@@ -2728,6 +2824,12 @@
      "label": "Cardholder in row 1",
      "type": "text",
      "hash": "b36b8fc680faaef4424df7316bd9418a62266dfb7b1fb9aede9e1081fabe7fe3",
+     "accept": [
+      "f3c23474f2f376772a751cc72b820a40ba0dca870ff5b94877e249c549f50621",
+      "4930da8301280aa82985cba007ef17248a2bc88ea74a521d28b8a27c9ead05a6",
+      "65c33408c347a570f48526f15efe43a8f6380e822af8371f243c783cd27efd07",
+      "7288e3489381c05c8211b5fd91db7a8370c66b0009d552ef821e0c0b943ecc1a"
+     ],
      "mistakes": []
     },
     {
@@ -2901,6 +3003,12 @@
      "label": "Cardholder with most transactions",
      "type": "text",
      "hash": "fc3174902cfb0afd74f94adcc3c2021bb8ccdc6edab932248aeda1bf8e6ab951",
+     "accept": [
+      "22856bba5e297b6413f5512140b804c124527e232a15adc84d268618f1af3e96",
+      "04ed68e10f8258e0be08edbc6b4cb867cb658d43157c3b451ce76c00e0d1e34b",
+      "c16532a7127458db69090b347478f0aa38f617ea26f669f2319ec8df7d3c6a91",
+      "3a6c7f18082632c43ae0594118c98872325f3ddd62fa141272c223c5d11a30d1"
+     ],
      "mistakes": []
     },
     {
@@ -2947,6 +3055,12 @@
      "label": "Cardholder",
      "type": "text",
      "hash": "293d4383128c3851a6a8a9bfdde7d98d42a170dd3632670335504b6dda47c603",
+     "accept": [
+      "596dd1421a4466ee7b77c896f2b55f996fcbfe3dc97d8e3ecbdec31c2acdb659",
+      "0b8930bfca3984d0fe832cfe547c17d758969f010b5b7e02ba0cd8c7560016f5",
+      "b48cb23c999156fe12be9b4b9d26df16c2a40dfafd81b19f086d9b08b9bc2197",
+      "f34b099cec6cfefa8c6c3212ecc1dd06276fdb31bf5aa0610a2761f87aa88760"
+     ],
      "mistakes": []
     },
     {
@@ -3006,6 +3120,9 @@
      "decimals": 2,
      "percent": false,
      "hash": "52cdb0d917fe639114f3f3ef33e3783849a6465fb2b8e0506b974f75690086e1",
+     "accept": [
+      "bf068c10f13d719912cb0bf70563299e56a1494d747d2deb7ce378591815a561"
+     ],
      "mistakes": []
     }
    ]
@@ -3023,7 +3140,7 @@
    "note": "pcards_2013_2014.zip contains pcards.db with OSU transactions for calendar years 2013 and 2014. TransactionDate and PostedDate are stored as text like '7/26/2014 0:00:00'. Use the Year and Month columns for filtering.",
    "checks": [
     {
-     "label": "Total spent 2014",
+     "label": "Total net spent 2014 (purchases minus returns)",
      "type": "number",
      "decimals": 2,
      "percent": false,
@@ -3135,7 +3252,7 @@
    ],
    "topic": "Calculated fields (IF / CASE)",
    "minutes": 5,
-   "prompt": "Task 4, Q18: OSU could earn 0.75% on Amazon.com purchases of $500 or more and 0.50% on purchases under $500. What would OSU have earned in 2014 (AmazonEarnings)? Use the vendor name Amazon.com in any capitalisation.",
+   "prompt": "Task 4, Q18: OSU could earn 0.75% on Amazon.com purchases of $500 or more and 0.50% on purchases under $500. What would OSU have earned in 2014 (AmazonEarnings)? Include all Amazon.com transactions, so returns reduce the earnings. Use the vendor name Amazon.com in any capitalisation.",
    "note": "pcards_2013_2014.zip contains pcards.db with OSU transactions for calendar years 2013 and 2014. TransactionDate and PostedDate are stored as text like '7/26/2014 0:00:00'. Use the Year and Month columns for filtering.",
    "checks": [
     {
@@ -3152,6 +3269,10 @@
       {
        "hash": "92cefa296ba2920213d371eb78a861129752aa5dfc7f671df73c87224cd445b1",
        "hint": "That includes all Amazon vendors (Marketplace, Kindle...). The question is about Amazon.com only."
+      },
+      {
+       "hash": "42b5eb86456a9e9354925d53a15c25b420888b1caf366673ab7bc2e081e7bc35",
+       "hint": "You left out the returns. Include all Amazon.com transactions: a return reduces the earnings."
       }
      ]
     }
@@ -3291,6 +3412,12 @@
      "label": "Top cardholder",
      "type": "text",
      "hash": "edb89c2e48268016ba6d9e428a9dcc8aec6d5eac081379735af07fac807b1ba9",
+     "accept": [
+      "81813a5d2529533cc58abec3f72dbe7a90272c411052015f2505db0810a66cc5",
+      "10e937a0c707ac4adcac149f727a4b7cdeac3524dc6d3f12ced175e4ae162189",
+      "269a678f25826ff46a858f2d4c9a909e21ec00f7f9e58d4993eedab11e6c2b1e",
+      "3844fe8d630ff72436af001160e5c41dfc4d31a7b3417bfd39073e8bb8457d28"
+     ],
      "mistakes": []
     },
     {
@@ -3512,6 +3639,12 @@
      "label": "Individual with most duplicate groups",
      "type": "text",
      "hash": "5150753b9bd3c74ed094e9510dffc93a000ec00d513aadfbae0827975988c004",
+     "accept": [
+      "5723864628dbb465f28bdf831f52a07b55d6ee76b84d17021d64b190da18a057",
+      "e4e2e396730fa05396fa7c8277b864a978632dc3f21cab75d6b269119d834dbb",
+      "8135e1468b6ab59fe216df1ed59e0018ddb9ca00a14c9cc798f28393abd3685d",
+      "f2640ad9813827b41541cbd70e22d25feac42dd177b9a56bce50de020660f011"
+     ],
      "mistakes": []
     }
    ]
@@ -3525,7 +3658,7 @@
    ],
    "topic": "Control & fraud tests",
    "minutes": 4,
-   "prompt": "Task 7, Q4: Round-number transactions can indicate fraud. How many 2014 transactions have a four-digit amount ending in 000 (e.g. 2000.00, no cents)?",
+   "prompt": "Task 7, Q4: Round-number transactions can indicate fraud. How many positive 2014 transactions are a four-digit whole-dollar amount ending in 000 (exactly 1000.00, 2000.00 ... 9000.00, no cents)?",
    "note": "pcards_2013_2014.zip contains pcards.db with OSU transactions for calendar years 2013 and 2014. TransactionDate and PostedDate are stored as text like '7/26/2014 0:00:00'. Use the Year and Month columns for filtering.",
    "checks": [
     {
@@ -3534,7 +3667,16 @@
      "decimals": 0,
      "percent": false,
      "hash": "53587ce5fd8658550d645751fda3535e3a0ed7dbcd2b43b4e0b0ebb353f9248b",
-     "mistakes": []
+     "mistakes": [
+      {
+       "hash": "0e03673ca18416b9bc231476c3afa643c7aa68be130f815d6a8b22c712de7baf",
+       "hint": "SQLite's % works on whole numbers, so 1000.10 % 1000 is also 0. Also require no cents: Amount = ROUND(Amount)."
+      },
+      {
+       "hash": "3f1f2f5df4f90e481162959da1ef2661b90bb17e1723bfbe244b7f3b97f331c4",
+       "hint": "That includes returns (negative amounts). The question asks for positive transactions."
+      }
+     ]
     }
    ]
   }

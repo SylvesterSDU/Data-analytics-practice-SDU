@@ -1,7 +1,7 @@
 """Excel part 3: IntegrateCo payroll (Parts 3 and 4)."""
 import pandas as pd
 
-from .common import FILES, Num, Text, question
+from .common import FILES, Num, Text, name_forms, question
 
 F15 = "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx"
 F16 = "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx"
@@ -25,6 +25,16 @@ p15["Name"] = p15.First_Name + " " + p15.Last_Name
 p15["Gross"] = p15.Reg_Pay + p15.OT_Pay
 p15["Hrs"] = p15.Reg_Hrs + p15.OT_Hrs
 p16["Hrs"] = p16.Hours + p16.OT_Hours
+GROSS = " (2015 gross pay = Reg_Pay + OT_Pay.)"
+REG_ONLY = "That uses Reg_Pay only. 2015 gross pay = Reg_Pay + OT_Pay."
+
+
+def jc_forms(code):
+    """Other ways to type a job code: 6, Service, 006 Service, 006 - Service."""
+    desc = jc.set_index("Job_Code").Job_Description[code]
+    return [str(int(code)), desc, f"{code} {desc}", f"{code} - {desc}", f"{int(code)} {desc}"]
+
+
 RIGHT3 = "You took the last three characters. Location codes (B, SG, R) come after the job code. Extract the three digits after the year and the optional H/S."
 
 question("XL-INT-01", "Excel", SRC, [F15, F16], "Group & aggregate", 3,
@@ -38,17 +48,17 @@ g15 = p15.groupby("JC").agg(h=("Hrs", "sum"), g=("Gross", "sum"))
 g16 = p16.groupby("JC").agg(h=("Hrs", "sum"), g=("Gross_Wages", "sum"))
 r15 = p15.groupby("JC_right3").Gross.sum()
 question("XL-INT-02", "Excel", SRC, [F15, F16, FJC], "Text functions & extraction", 6,
-         "Extract the job code from Job (2015) and Project (2016). Format: 2-digit project year, optional department letter (H or S), 3-digit job code, optional location code. Examples: 14005, 15S002, 14S001SG, 15007B. What is 2015 gross pay for job code 001 (Office)?",
+         "Extract the job code from Job (2015) and Project (2016). Format: 2-digit project year, optional department letter (H or S), 3-digit job code, optional location code. Examples: 14005, 15S002, 14S001SG, 15007B. What is 2015 gross pay for job code 001 (Office)?" + GROSS,
          [Num("2015 gross pay, job code 001", g15.loc["001", "g"], 2,
-              mistakes=[(r15.get("001", -1), RIGHT3)])])
+              mistakes=[(r15.get("001", -1), RIGHT3), (p15[p15.JC == "001"].Reg_Pay.sum(), REG_ONLY)])])
 
 diff = (g16.g - g15.g.reindex(g16.index).fillna(0))
 both = diff[g15.g.reindex(g16.index).fillna(0) > 0].sort_values(ascending=False)
 question("XL-INT-03", "Excel", SRC, [F15, F16, FJC], "Group & aggregate", 8,
          "Build the job code comparison table (Part 3, Q1): hours and gross pay per job code for 2015 and 2016. Which job code has the largest gross pay difference (2016 - 2015) overall, and how large is it? Among job codes with pay in both years, which has the largest positive difference?",
-         [Text("Job code with the largest difference overall", diff.idxmax()),
+         [Text("Job code with the largest difference overall", diff.idxmax(), accept=jc_forms(diff.idxmax())),
           Num("That difference", diff.max(), 2),
-          Text("Largest positive difference, both years", both.index[0])],
+          Text("Largest positive difference, both years", both.index[0], accept=jc_forms(both.index[0]))],
          note="Type job codes as three digits, e.g. 005.")
 
 rate = (g16.g / g16.h) - (g15.g / g15.h)
@@ -63,7 +73,7 @@ ot = (p15.groupby(["Emp_No", "Name"]).agg(h=("OT_Hrs", "sum"), p=("OT_Pay", "sum
 ot = ot[ot.h > 0].sort_values("p", ascending=False)
 question("XL-INT-05", "Excel", SRC, F15, "Sort & top-N", 5,
          "Part 4, Q1: Which employees earned overtime pay in the first six months of 2015? Show employees with more than zero overtime hours, sorted by overtime pay (highest first). How many employees are listed, and who earned the most overtime pay, and how much?",
-         [Num("Employees with overtime", len(ot)), Text("Employee with most overtime pay", ot.iloc[0].Name),
+         [Num("Employees with overtime", len(ot)), Text("Employee with most overtime pay", ot.iloc[0].Name, accept=name_forms(ot.iloc[0].Name)),
           Num("Overtime pay for that employee", ot.iloc[0].p, 2)])
 
 otj = jc.merge(p15.groupby("JC").agg(h=("OT_Hrs", "sum"), p=("OT_Pay", "sum")).reset_index(),
@@ -71,7 +81,7 @@ otj = jc.merge(p15.groupby("JC").agg(h=("OT_Hrs", "sum"), p=("OT_Pay", "sum")).r
 otj_r3 = p15.groupby("JC_right3").OT_Pay.sum()
 question("XL-INT-06", "Excel", SRC, [F15, FJC], "Joins & lookups", 6,
          "Part 4, Q2: List all 12 job codes from the job code table with their 2015 overtime hours and overtime pay, including codes with no overtime. Which job code has the most overtime pay, and how much? How many job codes have zero overtime?",
-         [Text("Job code with most overtime pay", otj.iloc[0].Job_Code),
+         [Text("Job code with most overtime pay (e.g. 001)", otj.iloc[0].Job_Code, accept=jc_forms(otj.iloc[0].Job_Code)),
           Num("Its overtime pay", otj.iloc[0].p, 2, mistakes=[(otj_r3.get(otj.iloc[0].Job_Code, -1), RIGHT3)]),
           Num("Job codes with zero overtime", (otj.p == 0).sum())])
 
@@ -106,16 +116,20 @@ question("XL-INT-10", "Excel", SRC, [F16, FLOC], "Joins & lookups", 6,
 
 mo = p15.groupby(p15.Pay_Date.dt.month).Gross.sum()
 dev = mo - mo.mean()
+mo_reg = p15.groupby(p15.Pay_Date.dt.month).Reg_Pay.sum()
+dev_reg = mo_reg - mo_reg.mean()
 question("XL-INT-11", "Excel", SRC, F15, "Dates & durations", 6,
-         "Part 4, Q8: Total 2015 gross wages by month of Pay_Date. Which month is furthest above the six-month average, and by how much? How far below the average is June?",
+         "Part 4, Q8: Total 2015 gross wages by month of Pay_Date. Which month is furthest above the six-month average, and by how much? How far below the average is June?" + GROSS,
          [Text("Month furthest above average (full name)", pd.Timestamp(2015, int(dev.idxmax()), 1).strftime("%B")),
-          Num("Amount above average", dev.max(), 2),
-          Num("June vs average (negative if below)", dev[6], 2)])
+          Num("Amount above average", dev.max(), 2, mistakes=[(dev_reg.max(), REG_ONLY)]),
+          Num("June vs average (negative if below)", dev[6], 2, mistakes=[(dev_reg[6], REG_ONLY)])])
 
 share = mo / mo.sum() * p16.Gross_Wages.sum()
+share_reg = mo_reg / mo_reg.sum() * p16.Gross_Wages.sum()
 question("XL-INT-12", "Excel", SRC, [F15, F16], "Multi-step queries", 6,
-         "Part 4, Q10: The 2016 data has no dates. Estimate 2016 monthly gross wages by applying each month's share of 2015 gross wages to the 2016 total. What is the estimate for January 2016 and for May 2016?",
-         [Num("Estimated January 2016", share[1], 2), Num("Estimated May 2016", share[5], 2)])
+         "Part 4, Q10: The 2016 data has no dates. Estimate 2016 monthly gross wages by applying each month's share of 2015 gross wages to the 2016 total. What is the estimate for January 2016 and for May 2016?" + GROSS,
+         [Num("Estimated January 2016", share[1], 2, mistakes=[(share_reg[1], REG_ONLY)]),
+          Num("Estimated May 2016", share[5], 2, mistakes=[(share_reg[5], REG_ONLY)])])
 
 # ---------- Quick questions (fit the 8-minute exam format) ----------
 question("XL-INT-13", "Excel", SRC, [F15, F16], "Data profiling & cleaning", 2,
