@@ -53,9 +53,9 @@ def _h(qid, idx, canon):
 # ---------- check builders ----------
 # A check is created without qid/idx; Question() fills them in and hashes.
 class Num:
-    def __init__(self, label, value, decimals=0, mistakes=(), percent=False):
+    def __init__(self, label, value, decimals=0, mistakes=(), percent=False, accept=()):
         self.label, self.value, self.decimals = label, value, decimals
-        self.mistakes, self.percent = list(mistakes), percent
+        self.mistakes, self.percent, self.accept = list(mistakes), percent, list(accept)
 
     def canon(self, v):
         return canon_number(v, self.decimals)
@@ -65,8 +65,8 @@ class Num:
 
 
 class Text:
-    def __init__(self, label, value, mistakes=()):
-        self.label, self.value, self.mistakes = label, value, list(mistakes)
+    def __init__(self, label, value, mistakes=(), accept=()):
+        self.label, self.value, self.mistakes, self.accept = label, value, list(mistakes), list(accept)
 
     def canon(self, v):
         return canon_text(v)
@@ -76,9 +76,9 @@ class Text:
 
 
 class Date:
-    def __init__(self, label, value, with_time=False, mistakes=()):
+    def __init__(self, label, value, with_time=False, mistakes=(), accept=()):
         self.label, self.value, self.with_time = label, value, with_time
-        self.mistakes = list(mistakes)
+        self.mistakes, self.accept = list(mistakes), list(accept)
 
     def canon(self, v):
         return canon_date(v, self.with_time)
@@ -97,14 +97,16 @@ def question(qid, subject, source, files, topic, minutes, prompt, checks, note=N
     out = []
     for idx, c in enumerate(checks):
         right = c.canon(c.value)
+        accepted = sorted({c.canon(a) for a in c.accept} - {right})
         mistakes = []
         for wrong, hint in c.mistakes:
             w = c.canon(wrong)
-            if w != right and all(m["_c"] != w for m in mistakes):
+            if w != right and w not in accepted and all(m["_c"] != w for m in mistakes):
                 mistakes.append({"_c": w, "hash": _h(qid, idx, w), "hint": hint})
         out.append({"label": c.label, **c.spec(), "hash": _h(qid, idx, right),
+                    **({"accept": [_h(qid, idx, a) for a in accepted]} if accepted else {}),
                     "mistakes": [{k: v for k, v in m.items() if k != "_c"} for m in mistakes]})
-        ANSWER_LOG.append((qid, c.label, right, [m["_c"] for m in mistakes]))
+        ANSWER_LOG.append((qid, c.label, right, [m["_c"] for m in mistakes], accepted))
     REGISTRY.append({
         "id": qid, "subject": subject, "source": source,
         "files": [files] if isinstance(files, str) else list(files),

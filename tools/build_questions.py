@@ -25,8 +25,9 @@ out.write_text(json.dumps({"salt": common.SALT, "topics": common.TOPICS, "questi
 
 log = Path(__file__).parent / "answers_log.txt"
 with log.open("w") as fh:
-    for qid, label, right, wrong in common.ANSWER_LOG:
-        fh.write(f"{qid:14} | {label:55.55} | {right:>22} | known mistakes: {', '.join(wrong) or '-'}\n")
+    for qid, label, right, wrong, accepted in common.ANSWER_LOG:
+        alt = f" | also accepted: {', '.join(accepted)}" if accepted else ""
+        fh.write(f"{qid:14} | {label:55.55} | {right:>22} | known mistakes: {', '.join(wrong) or '-'}{alt}\n")
 
 (Path(__file__).parent / "answers.json").write_text(json.dumps(common.ANSWER_LOG))
 print(f"{len(common.REGISTRY)} questions -> {out.relative_to(common.ROOT)}")

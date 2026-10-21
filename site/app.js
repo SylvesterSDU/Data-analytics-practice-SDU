@@ -19,8 +19,15 @@ function saveProgress() {
   try { localStorage.setItem(STORE_KEY, JSON.stringify(progress)); } catch (e) { /* ignore */ }
 }
 function topicState(topic) {
-  if (!progress.topics[topic]) progress.topics[topic] = { run: [], mastered: false };
+  if (!progress.topics[topic]) progress.topics[topic] = { run: [], fresh: 0, mastered: false };
   return progress.topics[topic];
+}
+// A run only earns the check mark if it contains at least one question the student had not
+// solved before, so a student cannot rebuild a run by retyping remembered figures.
+// Waived when every question in the topic has already been verified.
+function needsFresh(topic, st) {
+  if ((st.fresh || 0) > 0) return false;
+  return D.bank.some(x => x.topic === topic && !progress.verified[x.id]);
 }
 
 // ---------- hashing ----------
@@ -112,7 +119,7 @@ async function evaluate(q, idx, raw) {
     canons = [canonText(raw)];
   }
   const hashes = await Promise.all([...new Set(canons)].map(c => hashFor(q.id, idx, c)));
-  if (hashes.includes(check.hash)) return { state: "ok", msg: "Matches." };
+  if (hashes.includes(check.hash) || (check.accept || []).some(h => hashes.includes(h))) return { state: "ok", msg: "Matches." };
   for (const m of check.mistakes || []) {
     if (hashes.includes(m.hash)) return { state: "hint", msg: m.hint };
   }
@@ -149,7 +156,9 @@ function renderTopics() {
       : el("span", { class: "dots", title: `${st.run.length} of ${STREAK_TARGET} in a row` },
           ...Array.from({ length: STREAK_TARGET }, (_, i) => el("span", { class: `dot${i < st.run.length ? " on" : ""}` })));
     const btn = el("button", { class: "topic-btn", type: "button", onclick: () => { filters.topic = t; location.hash = "#/bank"; render(); } },
-      el("span", { class: "topic-name" }, t), el("span", { class: "topic-sub" }, `${verified} of ${qs.length} verified`));
+      el("span", { class: "topic-name" }, t),
+      el("span", { class: "topic-sub" }, !st.mastered && st.run.length >= STREAK_TARGET && needsFresh(t, st)
+        ? "3 in a row: now solve one new question" : `${verified} of ${qs.length} verified`));
     ul.append(el("li", {}, btn, right));
   }
   $("#overall").textContent = `${mastered} of ${D.topics.length} topics mastered`;
@@ -281,16 +290,23 @@ async function onCheck(q, node) {
 
   const st = topicState(q.topic);
   if (results.every(r => r.state === "ok")) {
+    const wasNew = !progress.verified[q.id];
     progress.verified[q.id] = new Date().toISOString();
-    if (!st.run.includes(q.id)) st.run.push(q.id);
-    const justMastered = !st.mastered && st.run.length >= STREAK_TARGET;
+    if (!st.run.includes(q.id)) {
+      st.run.push(q.id);
+      if (wasNew) st.fresh = (st.fresh || 0) + 1;
+    }
+    const waiting = needsFresh(q.topic, st);
+    const justMastered = !st.mastered && st.run.length >= STREAK_TARGET && !waiting;
     if (justMastered) st.mastered = true;
     status.className = "status ok";
     status.textContent = justMastered ? `All correct. ${q.topic}: mastered!`
-      : st.mastered ? "All correct." : `All correct. ${st.run.length} of ${STREAK_TARGET} in a row for ${q.topic}.`;
+      : st.mastered ? "All correct."
+      : st.run.length >= STREAK_TARGET ? `All correct. ${st.run.length} in a row, but you had solved all of them before. Verify one question in this topic you haven't solved yet to earn the check mark.`
+      : `All correct. ${st.run.length} of ${STREAK_TARGET} in a row for ${q.topic}.`;
     markVerified(q, node);
   } else {
-    if (!st.mastered) st.run = [];
+    if (!st.mastered) { st.run = []; st.fresh = 0; }
     status.className = "status bad";
     status.textContent = st.mastered ? "Not all values match." : "Not all values match. Your run for this topic starts again.";
   }
