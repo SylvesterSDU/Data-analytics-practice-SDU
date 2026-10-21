@@ -27,7 +27,7 @@ The API key stays on the server (`api/tutor.js`, a Vercel function). Set it in V
 | Name | Value |
 |---|---|
 | `GEMINI_API_KEY` | your key from Google AI Studio |
-| `GEMINI_MODEL` (optional) | e.g. `gemini-3.8-flash` (default) |
+| `GEMINI_MODEL` (optional) | default `gemini-3.5-flash-lite` (fast); fallback `gemini-3.1-flash-lite` |
 
 ## How the answers are produced
 
