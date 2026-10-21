@@ -1,0 +1,689 @@
+{
+ "exams": [
+  {
+   "id": "EX01",
+   "excel": "NYC film permits",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-NYC-06",
+    "XL-NYC-14",
+    "SQL-MOV-03",
+    "SQL-MOV-05",
+    "SQL-SNG-02"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "movies.zip",
+    "songs.db"
+   ],
+   "minutes": 8,
+   "estimate": 14
+  },
+  {
+   "id": "EX02",
+   "excel": "NYC film permits",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-NYC-15",
+    "XL-NYC-18",
+    "SQL-MOV-01",
+    "SQL-MOV-03",
+    "SQL-MOV-04"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "movies.zip"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  },
+  {
+   "id": "EX03",
+   "excel": "NYC film permits",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-NYC-04",
+    "XL-NYC-11",
+    "XL-NYC-15",
+    "SQL-MOV-04",
+    "SQL-SNG-01"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "movies.zip",
+    "songs.db"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  },
+  {
+   "id": "EX04",
+   "excel": "NYC film permits",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-NYC-02",
+    "XL-NYC-05",
+    "SQL-MOV-02",
+    "SQL-SNG-01",
+    "SQL-SNG-02"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "movies.zip",
+    "songs.db"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX05",
+   "excel": "NYC film permits",
+   "sql": "Chinook",
+   "questions": [
+    "XL-NYC-04",
+    "XL-NYC-06",
+    "XL-NYC-17",
+    "SQL-CHN-06",
+    "SQL-CHN-08"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 14
+  },
+  {
+   "id": "EX06",
+   "excel": "NYC film permits",
+   "sql": "Chinook",
+   "questions": [
+    "XL-NYC-06",
+    "XL-NYC-07",
+    "XL-NYC-14",
+    "SQL-CHN-02",
+    "SQL-CHN-07"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 14
+  },
+  {
+   "id": "EX07",
+   "excel": "NYC film permits",
+   "sql": "Chinook",
+   "questions": [
+    "XL-NYC-14",
+    "XL-NYC-18",
+    "SQL-CHN-04",
+    "SQL-CHN-06",
+    "SQL-CHN-13"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  },
+  {
+   "id": "EX08",
+   "excel": "NYC film permits",
+   "sql": "Chinook",
+   "questions": [
+    "XL-NYC-15",
+    "XL-NYC-17",
+    "SQL-CHN-01",
+    "SQL-CHN-06",
+    "SQL-CHN-08"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  },
+  {
+   "id": "EX09",
+   "excel": "NYC film permits",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-NYC-06",
+    "XL-NYC-07",
+    "XL-NYC-11",
+    "SQL-PC-402",
+    "SQL-PC-404"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 15
+  },
+  {
+   "id": "EX10",
+   "excel": "NYC film permits",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-NYC-02",
+    "XL-NYC-07",
+    "XL-NYC-14",
+    "SQL-PC-404",
+    "SQL-PC-409"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 15
+  },
+  {
+   "id": "EX11",
+   "excel": "NYC film permits",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-NYC-07",
+    "XL-NYC-11",
+    "XL-NYC-15",
+    "SQL-PC-401",
+    "SQL-PC-405"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  },
+  {
+   "id": "EX12",
+   "excel": "NYC film permits",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-NYC-01",
+    "XL-NYC-03",
+    "SQL-PC-402",
+    "SQL-PC-405",
+    "SQL-PC-406"
+   ],
+   "files": [
+    "NYC_Film_Permits.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX13",
+   "excel": "ETL cases",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-ETL2-04",
+    "XL-ETL4-05",
+    "XL-ETL4-06",
+    "SQL-SNG-02",
+    "SQL-SNG-04"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case2_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "songs.db"
+   ],
+   "minutes": 8,
+   "estimate": 11
+  },
+  {
+   "id": "EX14",
+   "excel": "ETL cases",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-ETL3-04",
+    "XL-ETL4-05",
+    "XL-ETL4-06",
+    "SQL-MOV-01",
+    "SQL-MOV-05"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case3_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "movies.zip"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX15",
+   "excel": "ETL cases",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-ETL2-04",
+    "XL-ETL4-05",
+    "XL-ETL4-06",
+    "SQL-MOV-01",
+    "SQL-SNG-04"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case2_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "movies.zip",
+    "songs.db"
+   ],
+   "minutes": 8,
+   "estimate": 11
+  },
+  {
+   "id": "EX16",
+   "excel": "ETL cases",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-ETL1-04",
+    "XL-ETL3-04",
+    "XL-ETL4-05",
+    "SQL-MOV-05",
+    "SQL-SNG-03"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case1.csv",
+    "Analytics_mindset_case_studies_ETL_Case3_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "movies.zip",
+    "songs.db"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX17",
+   "excel": "ETL cases",
+   "sql": "Chinook",
+   "questions": [
+    "XL-ETL2-04",
+    "XL-ETL4-05",
+    "XL-ETL4-06",
+    "SQL-CHN-04",
+    "SQL-CHN-06"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case2_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 10
+  },
+  {
+   "id": "EX18",
+   "excel": "ETL cases",
+   "sql": "Chinook",
+   "questions": [
+    "XL-ETL2-04",
+    "XL-ETL4-05",
+    "XL-ETL4-06",
+    "SQL-CHN-01",
+    "SQL-CHN-13"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case2_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 11
+  },
+  {
+   "id": "EX19",
+   "excel": "ETL cases",
+   "sql": "Chinook",
+   "questions": [
+    "XL-ETL1-04",
+    "XL-ETL3-04",
+    "XL-ETL4-05",
+    "SQL-CHN-06",
+    "SQL-CHN-10"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case1.csv",
+    "Analytics_mindset_case_studies_ETL_Case3_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX20",
+   "excel": "ETL cases",
+   "sql": "Chinook",
+   "questions": [
+    "XL-ETL2-04",
+    "XL-ETL3-04",
+    "XL-ETL4-05",
+    "SQL-CHN-02",
+    "SQL-CHN-10"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case2_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case3_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX21",
+   "excel": "ETL cases",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-ETL1-04",
+    "XL-ETL3-04",
+    "XL-ETL4-05",
+    "SQL-PC-404",
+    "SQL-PC-406"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case1.csv",
+    "Analytics_mindset_case_studies_ETL_Case3_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  },
+  {
+   "id": "EX22",
+   "excel": "ETL cases",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-ETL1-04",
+    "XL-ETL2-04",
+    "XL-ETL4-05",
+    "SQL-PC-401",
+    "SQL-PC-402"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case1.csv",
+    "Analytics_mindset_case_studies_ETL_Case2_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 11
+  },
+  {
+   "id": "EX23",
+   "excel": "ETL cases",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-ETL1-04",
+    "XL-ETL3-04",
+    "XL-ETL4-06",
+    "SQL-PC-402",
+    "SQL-PC-404"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case1.csv",
+    "Analytics_mindset_case_studies_ETL_Case3_Excel.xlsx",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  },
+  {
+   "id": "EX24",
+   "excel": "ETL cases",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-ETL1-04",
+    "XL-ETL4-06",
+    "SQL-PC-405",
+    "SQL-PC-406",
+    "SQL-PC-407"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_ETL_Case1.csv",
+    "Analytics_mindset_case_studies_ETL_Case4_Excel.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX25",
+   "excel": "IntegrateCo payroll",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-INT-01",
+    "XL-INT-07",
+    "XL-INT-09",
+    "SQL-MOV-04",
+    "SQL-MOV-05"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "movies.zip"
+   ],
+   "minutes": 8,
+   "estimate": 14
+  },
+  {
+   "id": "EX26",
+   "excel": "IntegrateCo payroll",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-INT-07",
+    "XL-INT-15",
+    "XL-INT-16",
+    "SQL-MOV-03",
+    "SQL-SNG-04"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "movies.zip",
+    "songs.db"
+   ],
+   "minutes": 8,
+   "estimate": 14
+  },
+  {
+   "id": "EX27",
+   "excel": "IntegrateCo payroll",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-INT-07",
+    "XL-INT-14",
+    "XL-INT-16",
+    "SQL-MOV-03",
+    "SQL-MOV-06"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "movies.zip"
+   ],
+   "minutes": 8,
+   "estimate": 14
+  },
+  {
+   "id": "EX28",
+   "excel": "IntegrateCo payroll",
+   "sql": "Songs & movies",
+   "questions": [
+    "XL-INT-01",
+    "XL-INT-07",
+    "XL-INT-13",
+    "SQL-MOV-04",
+    "SQL-SNG-03"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "movies.zip",
+    "songs.db"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX29",
+   "excel": "IntegrateCo payroll",
+   "sql": "Chinook",
+   "questions": [
+    "XL-INT-13",
+    "XL-INT-14",
+    "XL-INT-15",
+    "SQL-CHN-03",
+    "SQL-CHN-04"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 10
+  },
+  {
+   "id": "EX30",
+   "excel": "IntegrateCo payroll",
+   "sql": "Chinook",
+   "questions": [
+    "XL-INT-01",
+    "XL-INT-13",
+    "XL-INT-16",
+    "SQL-CHN-01",
+    "SQL-CHN-02"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX31",
+   "excel": "IntegrateCo payroll",
+   "sql": "Chinook",
+   "questions": [
+    "XL-INT-01",
+    "XL-INT-09",
+    "XL-INT-15",
+    "SQL-CHN-01",
+    "SQL-CHN-10"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  },
+  {
+   "id": "EX32",
+   "excel": "IntegrateCo payroll",
+   "sql": "Chinook",
+   "questions": [
+    "XL-INT-09",
+    "XL-INT-13",
+    "XL-INT-15",
+    "SQL-CHN-02",
+    "SQL-CHN-07"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "Chinook_Sqlite.sqlite"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX33",
+   "excel": "IntegrateCo payroll",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-INT-13",
+    "XL-INT-14",
+    "XL-INT-15",
+    "SQL-PC-402",
+    "SQL-PC-403"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX34",
+   "excel": "IntegrateCo payroll",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-INT-13",
+    "XL-INT-14",
+    "SQL-PC-404",
+    "SQL-PC-405",
+    "SQL-PC-406"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 12
+  },
+  {
+   "id": "EX35",
+   "excel": "IntegrateCo payroll",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-INT-15",
+    "XL-INT-16",
+    "SQL-PC-402",
+    "SQL-PC-404",
+    "SQL-PC-405"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  },
+  {
+   "id": "EX36",
+   "excel": "IntegrateCo payroll",
+   "sql": "Purchasing cards",
+   "questions": [
+    "XL-INT-07",
+    "XL-INT-15",
+    "SQL-PC-401",
+    "SQL-PC-403",
+    "SQL-PC-406"
+   ],
+   "files": [
+    "Analytics_mindset_case_studies_IntegrateCo_2016payroll.xlsx",
+    "Analytics_mindset_case_studies_IntegrateCo_2015payroll.xlsx",
+    "pcards_2013_2014.zip"
+   ],
+   "minutes": 8,
+   "estimate": 13
+  }
+ ]
+}

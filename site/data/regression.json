@@ -1,0 +1,934 @@
+{
+ "exams": [
+  {
+   "id": "REG01",
+   "title": "Temperature and sales",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. Bob asks whether warmer days bring more sales. Regression of daily sales on tmax (\u00b0F).",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ tmax",
+    "stats": [
+     [
+      "Multiple R",
+      0.15069945603890106
+     ],
+     [
+      "R Square",
+      0.02271032605042067
+     ],
+     [
+      "Adjusted R Square",
+      0.01955777871509945
+     ],
+     [
+      "Standard Error",
+      1041.0186125923096
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 1,
+     "df_res": 310,
+     "ss_reg": 7806902.25776577,
+     "ss_res": 335953123.0467214,
+     "F": 7.20380176245844,
+     "sigF": 0.007665852088456422
+    },
+    "coefs": [
+     [
+      "Intercept",
+      2725.2924349803775,
+      204.51638336821,
+      13.325545807612773,
+      2.4442913938037912e-32,
+      2322.8766058775545,
+      3127.7082640832004
+     ],
+     [
+      "tmax",
+      7.579687651878795,
+      2.8240373269826344,
+      2.6839898961170507,
+      0.007665852088456516,
+      2.0229821027248045,
+      13.136393201032785
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "Interpret the coefficient on tmax.",
+     "a": "For each extra degree Fahrenheit of maximum temperature, daily sales are on average $7.58 higher. A 10-degree warmer day is associated with about $76 more in sales."
+    },
+    {
+     "q": "Is the effect of temperature statistically significant at the 5% level?",
+     "a": "Yes. The p-value is 0.008, below 0.05, and the 95% confidence interval ($2.02 to $13.14) does not contain 0."
+    },
+    {
+     "q": "How much of the variation in daily sales does temperature explain? What does that mean for Bob?",
+     "a": "R Square is 0.023: temperature explains only about 2.3% of the day-to-day variation in sales. The effect is real but small. Temperature alone is a poor tool for planning ingredients and shifts."
+    },
+    {
+     "q": "Does the intercept have a meaningful interpretation here?",
+     "a": "Not really. The intercept ($2,725) is predicted sales at 0\u00b0F. The coldest day in the data is 29\u00b0F, so 0\u00b0F is outside the data and the intercept is just the line's starting point."
+    }
+   ]
+  },
+  {
+   "id": "REG02",
+   "title": "Game days",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. gameDay = 1 on the 13 days with a university football game (home or away), otherwise 0.",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ gameDay",
+    "stats": [
+     [
+      "Multiple R",
+      0.27343163673310356
+     ],
+     [
+      "R Square",
+      0.07476485996654392
+     ],
+     [
+      "Adjusted R Square",
+      0.0717802304825651
+     ],
+     [
+      "Standard Error",
+      1012.9147579816882
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 1,
+     "df_res": 310,
+     "ss_reg": 25701170.15398556,
+     "ss_res": 318058855.1505016,
+     "F": 25.049963611185934,
+     "sigF": 9.383148834817914e-07
+    },
+    "coefs": [
+     [
+      "Intercept",
+      3191.080267558531,
+      58.57837293497798,
+      54.47539949770595,
+      8.469600764163557e-161,
+      3075.8187705385926,
+      3306.3417645784693
+     ],
+     [
+      "gameDay",
+      1436.3043478260852,
+      286.97424730631275,
+      5.004993867247578,
+      9.383148834818213e-07,
+      871.6406384497383,
+      2000.9680572024322
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "Interpret the intercept and the coefficient on gameDay.",
+     "a": "The intercept ($3,191) is average daily sales on days without a game. On game days sales are on average $1,436 higher, i.e. about $4,627 per day."
+    },
+    {
+     "q": "Is the game-day effect significant? How sure can Bob be about its size?",
+     "a": "It is significant (p below 0.001). But the 95% confidence interval is wide, from $872 to $2,001, because there are only 13 game days in the data."
+    },
+    {
+     "q": "Can Bob conclude that football games cause the higher sales?",
+     "a": "Not from this regression alone. 11 of the 13 games are on Saturdays, so gameDay may partly pick up a normal weekend effect. That is omitted-variable bias. Adding a weekend variable would show how much of the effect is really the game."
+    },
+    {
+     "q": "What does R Square tell you here?",
+     "a": "R Square = 0.075. Game days explain about 7.5% of the variation in daily sales. The effect is large on the few game days, but there are so few of them that they explain little of the variation across the whole year."
+    }
+   ]
+  },
+  {
+   "id": "REG03",
+   "title": "Home games",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. homeGame = 1 on the 6 days with a home game, otherwise 0.",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ homeGame",
+    "stats": [
+     [
+      "Multiple R",
+      0.3317155736941359
+     ],
+     [
+      "R Square",
+      0.11003522183122971
+     ],
+     [
+      "Adjusted R Square",
+      0.10716436770810467
+     ],
+     [
+      "Standard Error",
+      993.42080006962
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 1,
+     "df_res": 310,
+     "ss_reg": 37825710.64108837,
+     "ss_res": 305934314.6633988,
+     "F": 38.328391869472945,
+     "sigF": 1.8937302504798093e-09
+    },
+    "coefs": [
+     [
+      "Intercept",
+      3202.169934640525,
+      56.790087221026496,
+      56.38607178357922,
+      5.139039068418684e-165,
+      3090.4271507251347,
+      3313.912718555915
+     ],
+     [
+      "homeGame",
+      2535.330065359477,
+      409.519142826966,
+      6.190992801600801,
+      1.8937302504798242e-09,
+      1729.5413912194128,
+      3341.1187394995413
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "Interpret the coefficient on homeGame.",
+     "a": "On home-game days sales are on average $2,535 higher than on other days ($5,738 vs $3,202)."
+    },
+    {
+     "q": "Why should Bob be careful with this estimate even though p is very small?",
+     "a": "It rests on only 6 home-game days. One unusual day can move the coefficient a lot, and the 95% interval runs from $1,730 to $3,341."
+    },
+    {
+     "q": "Compare with the gameDay regression (all games). What does the difference suggest?",
+     "a": "The home-game effect is larger than the effect of games in general. That suggests the crowds in town on home-game days drive sales more than the game itself, but with so few observations this is a hypothesis to watch, not a firm conclusion."
+    },
+    {
+     "q": "Would you use homeGame to plan staffing? What would you add first?",
+     "a": "Yes, as an input for the few home-game days, which Bob knows in advance from the schedule. I would first add a weekend control so the home-game effect is not just a Saturday effect."
+    }
+   ]
+  },
+  {
+   "id": "REG04",
+   "title": "Rain and snow",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. Regression of daily sales on precipitation (prcp, inches) and snow (inches).",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ prcp + snow",
+    "stats": [
+     [
+      "Multiple R",
+      0.03752787634394436
+     ],
+     [
+      "R Square",
+      0.0014083415028863788
+     ],
+     [
+      "Adjusted R Square",
+      -0.005118401363107816
+     ],
+     [
+      "Standard Error",
+      1054.568006380472
+     ],
+     [
+      "Observations",
+      309
+     ]
+    ],
+    "anova": {
+     "df_reg": 2,
+     "df_res": 306,
+     "ss_reg": 479944.09577453136,
+     "ss_res": 340306786.1048727,
+     "F": 0.21578014207120114,
+     "sigF": 0.8060349907106145
+    },
+    "coefs": [
+     [
+      "Intercept",
+      3241.6849226779036,
+      62.756590105675706,
+      51.654892613177935,
+      3.726121226764514e-153,
+      3118.1958472352185,
+      3365.1739981205887
+     ],
+     [
+      "prcp",
+      32.31498726580594,
+      49.61813545375072,
+      0.6512737121274313,
+      0.5153586016381184,
+      -65.32093689858617,
+      129.95091143019806
+     ],
+     [
+      "snow",
+      -12.877904144948973,
+      103.08818834369785,
+      -0.1249212383286222,
+      0.9006679302521339,
+      -215.72935044227282,
+      189.97354215237485
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "Are rain or snow significant drivers of sales?",
+     "a": "No. The p-values are 0.515 (prcp) and 0.901 (snow), far above 0.05. Both confidence intervals include 0."
+    },
+    {
+     "q": "Adjusted R Square is negative. What does that mean?",
+     "a": "Adjusted R Square (-0.005) corrects R Square (0.0014) for the number of variables. A negative value means the model explains less than its two variables should explain by chance alone: the model has no explanatory power."
+    },
+    {
+     "q": "Why are there fewer observations than days with sales data?",
+     "a": "There are 309 observations but 312 days of sales. Some days have no precipitation or snow reading, and Excel's regression drops rows with missing values. These are gaps from the ETL merge."
+    },
+    {
+     "q": "What should Bob conclude?",
+     "a": "Weather in the form of rain or snow does not measurably change his sales. He does not need to adjust purchasing or shifts for forecast rain."
+    }
+   ]
+  },
+  {
+   "id": "REG05",
+   "title": "Forecasting one week ahead",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. sales_7 is sales on the same weekday one week earlier. The last day in the data is 31 December 2018, with sales of $3,252. Bob wants a forecast for 07 January 2019.",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ sales_7",
+    "stats": [
+     [
+      "Multiple R",
+      0.614560084549023
+     ],
+     [
+      "R Square",
+      0.37768409752090226
+     ],
+     [
+      "Adjusted R Square",
+      0.37567662686774395
+     ],
+     [
+      "Standard Error",
+      830.7154522023411
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 1,
+     "df_res": 310,
+     "ss_reg": 129832694.92088777,
+     "ss_res": 213927330.3835994,
+     "F": 188.1392870808283,
+     "sigF": 8.64509366520277e-34
+    },
+    "coefs": [
+     [
+      "Intercept",
+      1359.161530348091,
+      145.71808106201772,
+      9.327336185340176,
+      2.134956894078218e-18,
+      1072.4399413970948,
+      1645.8831192990872
+     ],
+     [
+      "sales_7",
+      0.5858443856162866,
+      0.042711273942325455,
+      13.71638753757083,
+      8.64509366520277e-34,
+      0.5018037213307556,
+      0.6698850499018176
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "Write the regression equation and interpret the coefficient on sales_7.",
+     "a": "Sales = 1,359.16 + 0.5858 \u00d7 sales_7. Each extra dollar of sales on the same weekday last week is associated with about 59 cents more sales today."
+    },
+    {
+     "q": "Forecast sales for 07 January 2019.",
+     "a": "Use the last observed day as sales_7: 1,359.16 + 0.5858 \u00d7 3,252 = $3,264."
+    },
+    {
+     "q": "How confident can Bob be in that forecast?",
+     "a": "Moderately. R Square = 0.378, so last week's sales explain 38% of the variation. The standard error of $831 means a typical day misses the forecast by roughly that much, so a rough 95% range is \u00b1$1,661."
+    },
+    {
+     "q": "The coefficient is below 1. What does that mean?",
+     "a": "Sales revert towards the average: a very strong week is usually followed by a somewhat less extreme one, and vice versa."
+    }
+   ]
+  },
+  {
+   "id": "REG06",
+   "title": "Same day last year",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. sales_364 is sales 364 days earlier: the same weekday, 52 weeks ago.",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ sales_364",
+    "stats": [
+     [
+      "Multiple R",
+      0.7276315967200764
+     ],
+     [
+      "R Square",
+      0.5294477405454079
+     ],
+     [
+      "Adjusted R Square",
+      0.5279298300310382
+     ],
+     [
+      "Standard Error",
+      722.3551459148462
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 1,
+     "df_res": 310,
+     "ss_reg": 182002968.687293,
+     "ss_res": 161757056.61719418,
+     "F": 348.80036440440205,
+     "sigF": 1.1142629936458245e-52
+    },
+    "coefs": [
+     [
+      "Intercept",
+      990.7439864284713,
+      127.7424043888203,
+      7.755795666823841,
+      1.2754174563461395e-13,
+      739.3921645005186,
+      1242.0958083564242
+     ],
+     [
+      "sales_364",
+      0.6400010856726694,
+      0.03426827518096457,
+      18.676197803739445,
+      1.1142629936458245e-52,
+      0.5725732535266064,
+      0.7074289178187325
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "Interpret the coefficient on sales_364.",
+     "a": "Each extra dollar of sales on the same day last year is associated with $0.64 more sales today."
+    },
+    {
+     "q": "Why use 364 days and not 365?",
+     "a": "364 days is exactly 52 weeks, so the comparison day is the same weekday. Weekday patterns are strong in restaurant sales (e.g. Sundays are almost always closed), so 365 days would compare different weekdays."
+    },
+    {
+     "q": "Compare R Square with the sales_7 model. Which predictor is better?",
+     "a": "R Square is 0.529 here vs 0.378 with sales_7. Last year's same day explains more of the variation, because it captures seasonality (time of year, holidays, the football season)."
+    },
+    {
+     "q": "Is the relationship significant?",
+     "a": "Yes. t = 18.7 and p below 0.001."
+    }
+   ]
+  },
+  {
+   "id": "REG07",
+   "title": "Last year's sales and game days",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. The model includes sales_364, gameDay and their interaction (sales_364 \u00d7 gameDay), as the case asks: how do sales one year ago interact with a game day?",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ sales_364 * gameDay",
+    "stats": [
+     [
+      "Multiple R",
+      0.7321069147198283
+     ],
+     [
+      "R Square",
+      0.5359805345805859
+     ],
+     [
+      "Adjusted R Square",
+      0.5314608644628643
+     ],
+     [
+      "Standard Error",
+      719.6485054144836
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 3,
+     "df_res": 308,
+     "ss_reg": 184248682.13013476,
+     "ss_res": 159511343.1743524,
+     "F": 118.58841920320984,
+     "sigF": 4.566965462084358e-51
+    },
+    "coefs": [
+     [
+      "Intercept",
+      1044.4154790998814,
+      132.905175039942,
+      7.858350728525079,
+      6.568923292274252e-14,
+      782.8984971809168,
+      1305.932461018846
+     ],
+     [
+      "sales_364",
+      0.6195944603553314,
+      0.03643127205959725,
+      17.007214552973835,
+      3.330881036458056e-46,
+      0.5479087918805613,
+      0.6912801288301015
+     ],
+     [
+      "gameDay",
+      387.029625612736,
+      813.7022734809285,
+      0.4756403395028823,
+      0.634667795277846,
+      -1214.0890868631357,
+      1988.1483380886077
+     ],
+     [
+      "sales_364 \u00d7 gameDay",
+      0.010739671587295274,
+      0.15762702040337784,
+      0.0681334428565087,
+      0.9457236181417783,
+      -0.2994223866800515,
+      0.32090172985464205
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "What does the interaction term sales_364 \u00d7 gameDay measure?",
+     "a": "Whether the link between last year's sales and today's sales is different on game days. Its coefficient is the extra slope on sales_364 for game days."
+    },
+    {
+     "q": "Interpret the interaction coefficient and its p-value.",
+     "a": "The coefficient is 0.0107 with p = 0.946. The relationship between last year's and today's sales is no different on game days: there is no evidence of an interaction."
+    },
+    {
+     "q": "gameDay is not significant here, though it was on its own. Why?",
+     "a": "Once sales_364 is in the model, much of the game-day effect is already captured: on game days, sales on the same day last year averaged $5,070 vs $3,465 on other days. Also, with the interaction included, gameDay ($387, p = 0.635) means the game effect when sales_364 = 0, which is not a realistic situation."
+    },
+    {
+     "q": "What would you tell Bob?",
+     "a": "Use last year's sales (slope 0.620, p below 0.001) as the main predictor. Adding game days and their interaction raises R Square only from about 0.529 to 0.536."
+    }
+   ]
+  },
+  {
+   "id": "REG08",
+   "title": "Maximum and minimum temperature",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. Regression of daily sales on both tmax and tmin.",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ tmax + tmin",
+    "stats": [
+     [
+      "Multiple R",
+      0.16650605594612766
+     ],
+     [
+      "R Square",
+      0.027724266666734998
+     ],
+     [
+      "Adjusted R Square",
+      0.02143121984904406
+     ],
+     [
+      "Standard Error",
+      1040.02354139024
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 2,
+     "df_res": 309,
+     "ss_reg": 9530494.61090517,
+     "ss_res": 334229530.693582,
+     "F": 4.405539553399862,
+     "sigF": 0.01298582312562164
+    },
+    "coefs": [
+     [
+      "Intercept",
+      2660.97126039454,
+      210.57862320304517,
+      12.636473825877212,
+      8.627218396770744e-30,
+      2246.6218344395534,
+      3075.3206863495266
+     ],
+     [
+      "tmax",
+      17.27241895755784,
+      8.180350595518563,
+      2.1114521628229697,
+      0.03553613770199443,
+      1.1761812587512281,
+      33.36865665636445
+     ],
+     [
+      "tmin",
+      -13.988035062208509,
+      11.08109307626826,
+      -1.2623335050010436,
+      0.2077806877048929,
+      -35.79197928630168,
+      7.8159091618846634
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "tmin has a negative coefficient. Does that mean colder nights increase sales?",
+     "a": "No. tmax and tmin are highly correlated (correlation 0.94). With both in the model, each coefficient is the effect holding the other fixed, which hardly happens in practice. The negative sign is not significant (p = 0.208) and is a symptom of multicollinearity."
+    },
+    {
+     "q": "Compare the tmax coefficient with the model that only has tmax.",
+     "a": "It changes from $7.58 to $17.27 per degree, and its standard error grows to 8.18. Correlated predictors make individual coefficients unstable."
+    },
+    {
+     "q": "Did adding tmin improve the model?",
+     "a": "Barely. R Square rises to 0.028, Adjusted R Square is 0.021, and tmin is not significant. Keep one temperature variable."
+    },
+    {
+     "q": "What is the F-test telling you here?",
+     "a": "F = 4.41 with Significance F = 0.013: the two variables together explain more than nothing, even though tmin on its own is not significant."
+    }
+   ]
+  },
+  {
+   "id": "REG09",
+   "title": "Weekends",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. weekend = 1 on Saturdays and Sundays. Note: the restaurant is almost always closed on Sundays, so nearly all weekend observations are Saturdays.",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ weekend",
+    "stats": [
+     [
+      "Multiple R",
+      0.369269370722122
+     ],
+     [
+      "R Square",
+      0.13635986815351198
+     ],
+     [
+      "Adjusted R Square",
+      0.13357393224432978
+     ],
+     [
+      "Standard Error",
+      978.6181066366794
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 1,
+     "df_res": 310,
+     "ss_reg": 46875071.72696781,
+     "ss_res": 296884953.57751936,
+     "F": 48.945802272076996,
+     "sigF": 1.6283261008544497e-11
+    },
+    "coefs": [
+     [
+      "Intercept",
+      3073.596899224805,
+      60.92610210080994,
+      50.44794912596165,
+      1.6707763321629073e-151,
+      2953.715902469844,
+      3193.477895979766
+     ],
+     [
+      "weekend",
+      1024.569767441861,
+      146.44812342574923,
+      6.996127662648602,
+      1.6283261008544497e-11,
+      736.4117136060331,
+      1312.7278212776887
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "Interpret the intercept and the weekend coefficient.",
+     "a": "Average weekday sales are $3,074. Weekend days sell on average $1,025 more, about $4,098 per day."
+    },
+    {
+     "q": "How many weekend observations are there, and why does that matter?",
+     "a": "54 of 312 days, almost all Saturdays. The result describes Saturdays; it says nothing about Sunday trading."
+    },
+    {
+     "q": "Is the effect significant, and how much variation does it explain?",
+     "a": "Yes (t = 7.0, p below 0.001). R Square = 0.136, so the weekend effect alone explains 14% of the variation."
+    },
+    {
+     "q": "How should Bob use this result?",
+     "a": "Schedule more staff and buy more ingredients for Saturdays. It is a predictable, recurring effect he can plan around every week."
+    }
+   ]
+  },
+  {
+   "id": "REG10",
+   "title": "Three lagged sales variables",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. The model uses sales 7, 28 and 364 days earlier.",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ sales_7 + sales_28 + sales_364",
+    "stats": [
+     [
+      "Multiple R",
+      0.7731902947962106
+     ],
+     [
+      "R Square",
+      0.5978232319670511
+     ],
+     [
+      "Adjusted R Square",
+      0.593905925784912
+     ],
+     [
+      "Standard Error",
+      669.9784255973136
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 3,
+     "df_res": 308,
+     "ss_reg": 205507729.34860379,
+     "ss_res": 138252295.95588338,
+     "F": 152.61080042525535,
+     "sigF": 1.3083121510054593e-60
+    },
+    "coefs": [
+     [
+      "Intercept",
+      513.0792771325074,
+      135.65139430478695,
+      3.7823369215041054,
+      0.00018662525052214296,
+      246.15857053830632,
+      779.9999837267085
+     ],
+     [
+      "sales_7",
+      0.16378326294033346,
+      0.04774637051428065,
+      3.430276713731505,
+      0.0006852170572667284,
+      0.06983292044443933,
+      0.2577336054362276
+     ],
+     [
+      "sales_28",
+      0.21069531465311453,
+      0.04495061633512576,
+      4.687261973946971,
+      4.163689549189208e-06,
+      0.12224616648543364,
+      0.29914446282079543
+     ],
+     [
+      "sales_364",
+      0.42987232530517916,
+      0.04345631735018177,
+      9.892056012044497,
+      3.2356756659779315e-20,
+      0.3443635032798752,
+      0.5153811473304831
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "Interpret the coefficient on sales_364 in this model.",
+     "a": "Holding sales 7 and 28 days ago constant, each extra dollar of sales on the same day last year is associated with $0.43 more sales today."
+    },
+    {
+     "q": "Why is the sales_364 coefficient smaller here than in the single-variable model?",
+     "a": "It falls from 0.640 to 0.430. The lags are correlated, so part of what sales_364 picked up alone is now credited to the recent lags."
+    },
+    {
+     "q": "Compare R Square and Adjusted R Square with the sales_364-only model.",
+     "a": "R Square rises from 0.529 to 0.598, and Adjusted R Square to 0.594. The extra variables add real explanatory power, not just noise."
+    },
+    {
+     "q": "Which variables are significant at 5%?",
+     "a": "All three: sales_7 (p below 0.001), sales_28 (p below 0.001), sales_364 (p below 0.001)."
+    }
+   ]
+  },
+  {
+   "id": "REG11",
+   "title": "Temperature, game days and weekends",
+   "scenario": "Bob owns Larry's Commissary. Daily sales are the sum of netTotal over all menu items. The sales data has been merged with the weather and game data. Regression of daily sales on tmax, gameDay and weekend together.",
+   "file": "restaurant_data.xlsm",
+   "minutes": 5,
+   "output": {
+    "formula": "sales ~ tmax + gameDay + weekend",
+    "stats": [
+     [
+      "Multiple R",
+      0.4218018282708209
+     ],
+     [
+      "R Square",
+      0.1779167823326071
+     ],
+     [
+      "Adjusted R Square",
+      0.16990947826441816
+     ],
+     [
+      "Standard Error",
+      957.8780453170672
+     ],
+     [
+      "Observations",
+      312
+     ]
+    ],
+    "anova": {
+     "df_reg": 3,
+     "df_res": 308,
+     "ss_reg": 61160677.59674996,
+     "ss_res": 282599347.7077372,
+     "F": 22.21931137090548,
+     "sigF": 4.739630850549139e-13
+    },
+    "coefs": [
+     [
+      "Intercept",
+      2575.57192398629,
+      189.3669313359102,
+      13.60095929007578,
+      2.55934646714982e-33,
+      2202.9553697901124,
+      2948.188478182468
+     ],
+     [
+      "tmax",
+      7.1097569764682,
+      2.5992543176022886,
+      2.7353064024249365,
+      0.0065934663036668955,
+      1.9952146407397144,
+      12.224299312196685
+     ],
+     [
+      "gameDay",
+      820.7150628002801,
+      292.25954570935727,
+      2.8081719651219017,
+      0.005300457478709278,
+      245.63712239691358,
+      1395.7930032036465
+     ],
+     [
+      "weekend",
+      855.762023586277,
+      154.37461768348592,
+      5.543411452139398,
+      6.380624282432549e-08,
+      551.9997051562657,
+      1159.5243420162883
+     ]
+    ]
+   },
+   "questions": [
+    {
+     "q": "Interpret the coefficient on gameDay.",
+     "a": "Holding temperature and weekend constant, game days have on average $821 more sales than other days (p = 0.005)."
+    },
+    {
+     "q": "In the gameDay-only model the effect was larger. Why did it shrink?",
+     "a": "It drops from $1,436 to $821. 11 of the 13 games are on Saturdays, which are busy anyway. Without the weekend control, gameDay took credit for part of the Saturday effect: omitted-variable bias."
+    },
+    {
+     "q": "Which of the three variables matters most for Bob's planning?",
+     "a": "Weekend has the largest and most precise effect ($856, t = 5.5). Game days add $821 on top. Temperature is significant but small ($7.11 per degree)."
+    },
+    {
+     "q": "How good is the model overall?",
+     "a": "R Square = 0.178, Adjusted R Square = 0.170. It explains 18% of the variation: better than any of the three alone, but much less than models with lagged sales."
+    }
+   ]
+  }
+ ]
+}

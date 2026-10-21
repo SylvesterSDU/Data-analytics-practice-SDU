@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.DS_Store
+# plain-text answers: never publish
+tools/answers_log.txt
+tools/answers.json
+# private notes
+PARAGRAPH_NOTES.md
+HANDOFF.md

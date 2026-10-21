@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Analytics Practice</title>
+<meta name="description" content="Practice exams for Data Analytics in Accounting (SDU): Excel and SQL data manipulation with result checks and topic mastery, plus regression interpretation.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="#/bank">Data Analytics in Accounting <span>Practice</span></a>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#/bank" data-tab="bank">Question bank</a>
+      <a href="#/exams" data-tab="exams">Practice exams</a>
+      <a href="#/interpretation" data-tab="interpretation">Data interpretation</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap layout" id="layout">
+  <aside class="panel" id="mastery" aria-labelledby="topics-h">
+    <h2 id="topics-h">Topic mastery</h2>
+    <p class="muted small">Solve a task, type in a few figures from your result, and the site checks them against values computed from the real files. A topic gets a check mark after <strong>3 questions verified in a row</strong>; a wrong check resets the run.</p>
+    <details id="topics-box" open>
+      <summary class="overall small" id="overall"></summary>
+      <ul id="topics" class="topics"></ul>
+    </details>
+    <p class="muted small">Progress is stored only in this browser. Nothing is sent anywhere.</p>
+    <button id="reset" class="link" type="button">Reset my progress</button>
+  </aside>
+  <section id="view" class="view" aria-live="polite"></section>
+</main>
+
+<template id="q-tpl">
+  <article class="card">
+    <div class="meta"></div>
+    <p class="prompt"></p>
+    <div class="downloads"><span class="muted small">Dataset:</span></div>
+    <form class="check" novalidate>
+      <h3>Check my result</h3>
+      <p class="muted small">Type in these figures from your own output. You only see whether they match, never the solution.</p>
+      <div class="fields"></div>
+      <div class="actions">
+        <button type="submit">Check</button>
+        <span class="status" role="status"></span>
+      </div>
+    </form>
+  </article>
+</template>
+
+<script src="app.js"></script>
+</body>
+</html>
