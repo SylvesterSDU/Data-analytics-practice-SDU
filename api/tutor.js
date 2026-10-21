@@ -1,0 +1,89 @@
+// Vercel serverless function: result-aware AI tutor (Gemini).
+// The API key lives in the Vercel environment variable GEMINI_API_KEY and never reaches the browser.
+// The tutor never receives the correct answers: the site only has hashes of them.
+
+const MODELS = [process.env.GEMINI_MODEL, "gemini-3.8-flash", "gemini-3.5-flash-lite"].filter(Boolean);
+const LIMITS = { message: 3000, history: 6, turn: 2000, context: 12000 };
+
+const SYSTEM = `You are a tutor for the university course "Data Analytics in Accounting" (SDU). A student is practising Excel and SQL tasks for an oral exam.
+
+Rules:
+1. Never give the final figures, and never write a complete formula or query that solves the whole task. Give the next step only: point to the likely error, name the function or clause to use, or show a tiny example on other column names.
+2. You do not know the correct answer values, so never guess them or say a number is right. The VERIFICATION section is the truth: a figure marked MATCHES is correct; a figure marked DOES NOT MATCH is wrong, even if the student's formula or query looks fine to you. Use any known-mistake hint as the starting point.
+3. Use only the sheet, table and column names in the DATASET section. Excel: English function names. SQL: SQLite syntax (no YEAR(), DATEDIFF(), TOP; use strftime, julianday, LIMIT).
+4. Be short: at most about 120 words, plain sentences, code in backticks.
+5. If the student asks for the answer, say briefly that you can't give it and give the next hint instead.
+6. If all figures match, confirm briefly and, if useful, mention a faster or more robust way to do it.`;
+
+function clip(s, n) {
+  s = String(s ?? "");
+  return s.length > n ? s.slice(0, n) + " [cut]" : s;
+}
+
+function buildContext(b) {
+  const checks = (b.checks || []).slice(0, 6).map(c => {
+    const state = c.state === "ok" ? "MATCHES" : c.state === "none" ? "not checked yet" : "DOES NOT MATCH";
+    const typed = c.value ? ` (student typed: ${clip(c.value, 60)})` : "";
+    const hint = c.hint ? ` Known-mistake hint shown: ${clip(c.hint, 300)}` : "";
+    return `- ${clip(c.label, 120)}: ${state}${typed}.${hint}`;
+  }).join("\n");
+  return clip(`TASK (${clip(b.subject, 10)}, ${clip(b.source, 60)}, topic: ${clip(b.topic, 60)}):
+${clip(b.prompt, 1200)}
+${b.note ? "Task note: " + clip(b.note, 400) : ""}
+
+DATASET:
+${clip(b.datasets, 6000)}
+
+VERIFICATION (from the site's answer check):
+${checks || "- The student has not checked any figures yet."}`, LIMITS.context);
+}
+
+async function callGemini(model, key, system, contents) {
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents,
+      generationConfig: { temperature: 0.3, maxOutputTokens: 700 },
+    }),
+  });
+  const data = await r.json().catch(() => ({}));
+  return { status: r.status, data };
+}
+
+module.exports = async (req, res) => {
+  if (req.method !== "POST") return res.status(405).json({ error: "Use POST." });
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return res.status(503).json({ error: "The AI tutor is not configured yet (missing GEMINI_API_KEY)." });
+
+  const b = req.body || {};
+  const message = String(b.message || "").trim();
+  if (!message) return res.status(400).json({ error: "Write a question for the tutor first." });
+
+  const history = (Array.isArray(b.history) ? b.history : []).slice(-LIMITS.history)
+    .filter(t => t && (t.role === "user" || t.role === "model"))
+    .map(t => ({ role: t.role, parts: [{ text: clip(t.text, LIMITS.turn) }] }));
+  const contents = [
+    { role: "user", parts: [{ text: buildContext(b) }] },
+    { role: "model", parts: [{ text: "Understood. I will follow the rules and use the verification result." }] },
+    ...history,
+    { role: "user", parts: [{ text: clip(message, LIMITS.message) }] },
+  ];
+
+  try {
+    for (const model of MODELS) {
+      const { status, data } = await callGemini(model, key, SYSTEM, contents);
+      if (status === 404) continue; // model name not available: try the next one
+      if (status === 429) return res.status(429).json({ error: "The AI tutor has reached its usage limit for now. Try again in a minute." });
+      if (status !== 200) return res.status(502).json({ error: `The AI service returned an error (${status}).` });
+      const cand = data.candidates && data.candidates[0];
+      const text = cand && cand.content && (cand.content.parts || []).map(p => p.text || "").join("").trim();
+      if (!text) return res.status(502).json({ error: "The AI service returned an empty answer. Try rephrasing." });
+      return res.status(200).json({ reply: text, truncated: cand.finishReason === "MAX_TOKENS", model });
+    }
+    return res.status(502).json({ error: "No configured Gemini model is available. Set GEMINI_MODEL in Vercel." });
+  } catch (e) {
+    return res.status(502).json({ error: "Could not reach the AI service. Try again." });
+  }
+};

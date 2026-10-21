@@ -176,8 +176,79 @@ function questionCard(q, onChange) {
       el("div", { class: "feedback" })));
   });
   $("form", node).addEventListener("submit", e => { e.preventDefault(); onCheck(q, node).then(() => onChange && onChange()); });
+  node.append(tutorPanel(q, node));
   markVerified(q, node);
   return node;
+}
+
+// ---------- AI tutor (result-aware) ----------
+// The tutor gets the task, the real dataset description and the latest check result
+// (which figures matched, which known mistake was hit). It never gets the answers: the site only has hashes.
+function renderReply(text) {
+  const box = el("div", { class: "msg-body" });
+  text.split(/```(?:\w+)?\n?/).forEach((chunk, i) => {
+    if (i % 2) { box.append(el("pre", {}, el("code", {}, chunk.trim()))); return; }
+    chunk.split(/\n{2,}/).filter(p => p.trim()).forEach(p => {
+      const para = el("p");
+      p.split(/(`[^`]+`)/).forEach(part => {
+        if (/^`[^`]+`$/.test(part)) para.append(el("code", {}, part.slice(1, -1)));
+        else para.append(part.replace(/\*\*/g, ""));
+      });
+      box.append(para);
+    });
+  });
+  return box;
+}
+
+function tutorPanel(q, card) {
+  const history = [];
+  const log = el("div", { class: "tutor-log", "aria-live": "polite" });
+  const seen = el("p", { class: "muted small tutor-seen" });
+  const input = el("textarea", { rows: 3, placeholder: "Paste your formula or query and what you got, or ask what to try next." });
+  const send = el("button", { type: "submit", class: "btn" }, "Ask tutor");
+  const err = el("p", { class: "tutor-err small", role: "status" });
+  const describeSeen = () => {
+    const r = card._lastCheck;
+    seen.textContent = !r ? "The tutor will see your latest check result. Check your figures first for the most specific help."
+      : `The tutor sees your latest check: ${r.filter(x => x.state === "ok").length} of ${r.length} figures match.`;
+  };
+  card._onChecked = describeSeen;
+  describeSeen();
+  const form = el("form", { class: "tutor-form", onsubmit: async e => {
+    e.preventDefault();
+    const message = input.value.trim();
+    if (!message || send.disabled) return;
+    err.textContent = "";
+    send.disabled = true;
+    send.textContent = "Thinking…";
+    log.append(el("div", { class: "msg user" }, el("div", { class: "msg-body" }, el("p", {}, message))));
+    const checks = q.checks.map((c, i) => {
+      const r = card._lastCheck && card._lastCheck[i];
+      return { label: c.label, state: r ? r.state : "none", value: r ? r.value : "", hint: r && r.state === "hint" ? r.msg : "" };
+    });
+    try {
+      const resp = await fetch("api/tutor", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject: q.subject, source: q.source, topic: q.topic, prompt: q.prompt, note: q.note || "",
+          datasets: q.files.map(f => `${f}:\n${D.schemas[f] || ""}`).join("\n\n"), checks, message, history }),
+      });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok || !data.reply) throw new Error(data.error || `The tutor is not available right now (${resp.status}).`);
+      history.push({ role: "user", text: message }, { role: "model", text: data.reply });
+      log.append(el("div", { class: "msg tutor" }, renderReply(data.reply)));
+      input.value = "";
+    } catch (ex) {
+      log.lastElementChild.remove();
+      err.textContent = ex.message || "The tutor is not available right now.";
+    } finally {
+      send.disabled = false;
+      send.textContent = "Ask tutor";
+    }
+  } }, input, el("div", { class: "actions" }, send, err));
+  return el("details", { class: "tutor" },
+    el("summary", {}, "Ask the AI tutor"),
+    el("p", { class: "muted small" }, "Hints only, never the answer. The tutor does not know the correct figures either; it only knows whether yours match."),
+    seen, log, form);
 }
 
 function markVerified(q, node) {
@@ -204,6 +275,8 @@ async function onCheck(q, node) {
     fb.className = `feedback ${r.state}`;
     fb.textContent = r.msg;
   });
+  node._lastCheck = results.map((r, i) => ({ ...r, value: values[i] }));
+  if (node._onChecked) node._onChecked();
 
   const st = topicState(q.topic);
   if (results.every(r => r.state === "ok")) {
@@ -304,20 +377,51 @@ function viewExam(view, id) {
   if (!e) return viewExamList(view);
   lastExam = id;
   const qs = e.questions.map(q => D.byId[q]);
+  let cur = 0;
   const score = el("span", { class: "score" });
-  const upd = () => { score.textContent = `${qs.filter(q => progress.verified[q.id]).length} of ${qs.length} verified`; };
-  upd();
+  const steps = el("div", { class: "steps", role: "tablist", "aria-label": "Exam questions" });
+  const prev = el("button", { type: "button", class: "btn ghost", onclick: () => go(cur - 1) }, "← Previous");
+  const next = el("button", { type: "button", class: "btn ghost", onclick: () => go(cur + 1) }, "Next →");
+  const cards = qs.map((q, i) => {
+    const c = questionCard(q, upd);
+    c.prepend(el("div", { class: "qnum" }, `Question ${i + 1} of ${qs.length}`));
+    return c;
+  });
+  function upd() {
+    score.textContent = `${qs.filter(q => progress.verified[q.id]).length} of ${qs.length} verified`;
+    steps.replaceChildren(...qs.map((q, i) => el("button", {
+      type: "button", role: "tab", class: `step${i === cur ? " cur" : ""}${progress.verified[q.id] ? " ok" : ""}`,
+      "aria-selected": String(i === cur), "aria-label": `Question ${i + 1}${progress.verified[q.id] ? ", verified" : ""}`,
+      onclick: () => go(i) }, progress.verified[q.id] ? "✓" : String(i + 1))));
+  }
+  function go(i) {
+    cur = Math.max(0, Math.min(qs.length - 1, i));
+    cards.forEach((c, k) => { c.hidden = k !== cur; });
+    prev.disabled = cur === 0;
+    next.disabled = cur === qs.length - 1;
+    upd();
+  }
+  const fileLinks = e.files.map(f => el("a", { href: `files/${f}`, download: "" }, f));
+  const dlStatus = el("span", { class: "muted small", role: "status" });
+  const dlAll = el("button", { type: "button", class: "btn", onclick: async () => {
+    dlAll.disabled = true;
+    for (const [i, a] of fileLinks.entries()) {
+      dlStatus.textContent = `Starting download ${i + 1} of ${fileLinks.length}…`;
+      a.click();
+      await new Promise(r => setTimeout(r, 700)); // browsers block rapid multiple downloads
+    }
+    dlStatus.textContent = "Downloads started. If your browser blocked some, use the links.";
+    dlAll.disabled = false;
+  } }, "Download all exam files");
   view.append(el("a", { class: "back", href: "#/exams" }, "← All practice exams"),
     el("h1", { class: "view-title" }, `Exam ${e.id}`),
     el("p", { class: "lead" }, `${e.excel} (Excel) + ${e.sql} (SQL). Exam time: ${e.minutes} minutes, as in the oral exam.`),
     el("div", { class: "exam-bar" }, timer(e.minutes), score),
-    el("div", { class: "downloads files-all" }, el("span", { class: "muted small" }, "Exam files:"),
-      ...e.files.map(f => el("a", { href: `files/${f}`, download: "" }, f))),
-    el("div", { class: "questions" }, ...qs.map((q, i) => {
-      const c = questionCard(q, upd);
-      c.prepend(el("div", { class: "qnum" }, `Question ${i + 1}`));
-      return c;
-    })));
+    el("div", { class: "files-all" }, el("div", { class: "actions" }, dlAll, dlStatus),
+      el("div", { class: "downloads" }, el("span", { class: "muted small" }, "Files:"), ...fileLinks)),
+    el("div", { class: "exam-nav" }, prev, steps, next),
+    el("div", { class: "questions" }, ...cards));
+  go(0);
 }
 
 function viewRegList(view) {
@@ -400,8 +504,9 @@ function confirmReset() {
 
 window.addEventListener("hashchange", render);
 if (window.matchMedia("(max-width: 860px)").matches) $("#topics-box").open = false; // phones: topics collapsed under the summary
-Promise.all(["questions", "exams", "regression"].map(n => fetch(`data/${n}.json`).then(r => r.json())))
-  .then(([q, e, r]) => {
+Promise.all(["questions", "exams", "regression", "schemas"].map(n => fetch(`data/${n}.json`).then(r => r.json())))
+  .then(([q, e, r, s]) => {
+    D.schemas = s;
     D.salt = q.salt;
     D.topics = q.topics;
     D.bank = q.questions;
